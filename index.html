@@ -1,35 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мое 3D видео</title>
+    <title>Мои 3D видео</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            background-color: black; /* Чёрный фон для промежутков */
+            overflow-x: hidden; /* Убираем горизонтальную прокрутку */
         }
-        .video-container {
-            position: relative;
+        
+        .video-row {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            height: 100vh; /* На всю высоту экрана */
         }
+        
+        .video-container {
+            width: 100%;
+            margin-bottom: 15px; /* Чёрный промежуток между видео */
+        }
+        
         iframe {
             width: 100%;
-            height: 100%;
+            height: calc(20vh - 3px); /* Равномерно распределяем высоту */
             border: none;
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <!-- Вставь свою ссылку на YouTube (замени YOUR_VIDEO_ID) -->
-        <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-            allowfullscreen
-            allow="autoplay"
-        ></iframe>
+    <div class="video-row">
+        <!-- Видео 1 -->
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+                allowfullscreen
+                allow="autoplay"
+            ></iframe>
+        </div>
+        
+        <!-- Чёрный промежуток автоматически создаётся через margin-bottom -->
+        
+        <!-- Видео 2 -->
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+                allowfullscreen
+                allow="autoplay"
+            ></iframe>
+        </div>
+        
+        <!-- Видео 3 -->
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+                allowfullscreen
+                allow="autoplay"
+            ></iframe>
+        </div>
+        
+        <!-- Видео 4 -->
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+                allowfullscreen
+                allow="autoplay"
+            ></iframe>
+        </div>
+        
+        <!-- Видео 5 -->
+        <div class="video-container">
+            <iframe 
+                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+                allowfullscreen
+                allow="autoplay"
+            ></iframe>
+        </div>
     </div>
 </body>
 </html>
