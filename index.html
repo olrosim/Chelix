@@ -1,61 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Мое 3D видео в 1080p</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: black;
-        }
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>3D Портфолио — 4K Видео</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="video-container">
-        <iframe 
-            src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=hd1080" 
-            allowfullscreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        ></iframe>
-    </div>
 
-    <!-- Дополнительный скрипт для гарантированного качества -->
-    <script>
-        // Функция для принудительной установки качества
-        function forceQuality() {
-            const iframe = document.querySelector('iframe');
-            try {
-                // Обновляем src с параметром качества
-                iframe.src = iframe.src.split('&vq=')[0] + '&vq=hd1080';
-                
-                // Дополнительные попытки установить качество
-                setTimeout(() => {
-                    iframe.contentWindow.postMessage(JSON.stringify({
-                        event: 'command',
-                        func: 'setPlaybackQuality',
-                        args: ['hd1080']
-                    }), '*');
-                }, 1000);
-            } catch(e) {}
-        }
+<div class="video-wrapper">
+  <iframe 
+    id="youtube-player"
+    src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160&rel=0&modestbranding=1&playsinline=1"
+    allowfullscreen
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  ></iframe>
+</div>
 
-        // Вызываем при загрузке и периодически
-        window.addEventListener('load', forceQuality);
-        setInterval(forceQuality, 5000);
-    </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
