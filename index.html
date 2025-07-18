@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мои 3D видео</title>
+    <title>Мои 3D видео в максимальном качестве</title>
     <style>
         body, html {
             margin: 0;
@@ -33,9 +33,10 @@
     <!-- Видео 1 -->
     <div class="video-container">
         <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160" 
             allowfullscreen
-            allow="autoplay"
+            allow="autoplay; fullscreen"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         ></iframe>
     </div>
     
@@ -44,9 +45,10 @@
     <!-- Видео 2 -->
     <div class="video-container">
         <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160" 
             allowfullscreen
-            allow="autoplay"
+            allow="autoplay; fullscreen"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         ></iframe>
     </div>
     
@@ -55,9 +57,10 @@
     <!-- Видео 3 -->
     <div class="video-container">
         <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160" 
             allowfullscreen
-            allow="autoplay"
+            allow="autoplay; fullscreen"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         ></iframe>
     </div>
     
@@ -66,9 +69,10 @@
     <!-- Видео 4 -->
     <div class="video-container">
         <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160" 
             allowfullscreen
-            allow="autoplay"
+            allow="autoplay; fullscreen"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         ></iframe>
     </div>
     
@@ -77,10 +81,28 @@
     <!-- Видео 5 -->
     <div class="video-container">
         <iframe 
-            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160" 
             allowfullscreen
-            allow="autoplay"
+            allow="autoplay; fullscreen"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         ></iframe>
     </div>
+
+    <script>
+        // Функция для принудительного максимального качества
+        function setMaxQuality() {
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                const src = iframe.src;
+                // Удаляем старые параметры качества
+                const cleanSrc = src.split('&vq=')[0];
+                // Добавляем параметр для максимального качества
+                iframe.src = `${cleanSrc}&vq=hd2160`;
+            });
+        }
+
+        // Вызываем после загрузки страницы
+        window.addEventListener('load', setMaxQuality);
+    </script>
 </body>
 </html>
