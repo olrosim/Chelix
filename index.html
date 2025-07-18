@@ -1,154 +1,35 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>3D Видео от 144p до 4K</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      font-family: sans-serif;
-      color: white;
-      scroll-behavior: smooth;
-    }
-
-    .video-container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #000;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      object-fit: contain;
-    }
-
-    .spacer {
-      height: 300px;
-      width: 100%;
-      background-color: #000;
-    }
-  </style>
+    <title>Мое 3D видео</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* На всю высоту экрана */
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-
-  <!-- Видео 1 - 144p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=144" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 2 - 240p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=240" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 3 - 360p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=360" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 4 - 480p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/ ВАШ_ID_4?autoplay=1&mute=1&controls=1&vq=480" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 5 - 720p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=720" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 6 - 1080p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=hd1080" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 7 - 1440p -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=hd1440" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-  <div class="spacer"></div>
-
-  <!-- Видео 8 - 2160p (4K) -->
-  <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/_GGIqfyvD3M?autoplay=1&mute=1&controls=1&vq=hd2160&highres=1&vp9=1" 
-      allowfullscreen
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    ></iframe>
-  </div>
-
-  <!-- Скрипт для принудительного 4K -->
-  <script>
-    function force4K() {
-      const iframes = document.querySelectorAll('iframe[src*="youtube.com"]');
-      iframes.forEach((iframe, index) => {
-        const quality = ['144', '240', '360', '480', '720', 'hd1080', 'hd1440', 'hd2160'][index] || 'hd2160';
-        const src = iframe.src;
-        const newSrc = src.includes('?') 
-          ? `${src}&vq=${quality}&highres=1&vp9=1` 
-          : `${src}?vq=${quality}&highres=1&vp9=1`;
-        iframe.src = newSrc;
-
-        iframe.onload = () => {
-          try {
-            iframe.contentWindow.postMessage(JSON.stringify({
-              event: 'command',
-              func: 'setPlaybackQuality',
-              args: [quality]
-            }), "*");
-          } catch (e) {}
-        };
-      });
-    }
-
-    // Повторные попытки
-    window.addEventListener('load', () => {
-      setTimeout(force4K, 1000);
-      setTimeout(force4K, 3000);
-      setTimeout(force4K, 5000);
-    });
-  </script>
-
+    <div class="video-container">
+        <!-- Вставь свою ссылку на YouTube (замени YOUR_VIDEO_ID) -->
+        <iframe 
+            src="https://www.youtube.com/embed/_GGIqfyvD3M&vq=hd1080?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+    </div>
 </body>
 </html>
