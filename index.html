@@ -1,130 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>3D Видео в максимальном качестве</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            background-color: black;
-            overflow-x: hidden;
-        }
-        .video-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-        .video-spacer {
-            height: 100px;
-            background-color: black;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>3D Портфолио — 4K Видео</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-    <!-- Видео 1 -->
-    <div class="video-container">
-        <div id="player1"></div>
-    </div>
-    
-    <div class="video-spacer"></div>
-    
-    <!-- Видео 2 -->
-    <div class="video-container">
-        <div id="player2"></div>
-    </div>
-    
-    <div class="video-spacer"></div>
-    
-    <!-- Видео 3 -->
-    <div class="video-container">
-        <div id="player3"></div>
-    </div>
-    
-    <div class="video-spacer"></div>
-    
-    <!-- Видео 4 -->
-    <div class="video-container">
-        <div id="player4"></div>
-    </div>
-    
-    <div class="video-spacer"></div>
-    
-    <!-- Видео 5 -->
-    <div class="video-container">
-        <div id="player5"></div>
-    </div>
 
-    <!-- YouTube IFrame API -->
-    <script>
-        // Массив ID видео (замените на свои)
-        const videoIds = [
-            'isKnox_e_cQ',
-            'mEYsRvAUNQ8',
-            'dQw4w9WgXcQ',
-            'oHg5SJYRHA0',
-            '9bZkp7q19f0'
-        ];
-        
-        // Список качеств в порядке приоритета
-        const qualityLevels = [
-            'hd2160',  // 4K (3840x2160)
-            'hd1440',  // 1440p (2560x1440)
-            'hd1080',
-            'hd720',
-            'highres'
-        ];
-        
-        // Функция для принудительного максимального качества
-        function forceMaxQuality(player) {
-            qualityLevels.forEach(quality => {
-                try {
-                    player.setPlaybackQuality(quality);
-                    player.setPlaybackQualityRange(quality, quality);
-                } catch(e) {
-                    console.log("Error setting quality:", quality, e);
-                }
-            });
-        }
-        
-        // Создание плееров
-        function onYouTubeIframeAPIReady() {
-            videoIds.forEach((id, index) => {
-                new YT.Player(`player${index+1}`, {
-                    videoId: id,
-                    playerVars: {
-                        'autoplay': 1,
-                        'mute': 1,
-                        'controls': 1,
-                        'rel': 0,
-                        'modestbranding': 1,
-                        'fs': 1,
-                        'playsinline': 1,
-                        'vq': 'hd2160',
-                        'highres': 1,
-                        'vp9': 1
-                    },
-                    events: {
-                        'onReady': (event) => {
-                            forceMaxQuality(event.target);
-                            // Периодическая проверка качества
-                            setInterval(() => forceMaxQuality(event.target), 5000);
-                        },
-                        'onStateChange': (event) => {
-                            if (event.data === YT.PlayerState.PLAYING) {
-                                forceMaxQuality(event.target);
-                            }
-                        }
-                    }
-                });
-            });
-        }
-        
-        // Загрузка YouTube API
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    </script>
+<div class="video-wrapper">
+  <iframe 
+    id="youtube-player"
+    src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1&vq=hd2160&rel=0&modestbranding=1&playsinline=1"
+    allowfullscreen
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  ></iframe>
+</div>
+
 </body>
 </html>
