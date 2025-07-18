@@ -1,72 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>3D Видео в 4K</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            background-color: black;
-        }
-        .video-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-        .video-spacer {
-            height: 100px;
-            background-color: black;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>3D Портфолио</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      font-family: sans-serif;
+      color: white;
+    }
+    .video-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    .video-spacer {
+      height: 50px;
+      background-color: #000;
+    }
+  </style>
 </head>
 <body>
-    <!-- Видео 1 -->
-    <div class="video-container">
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/isKnox_e_cQ?autoplay=1&mute=1&controls=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    
-    <div class="video-spacer"></div>
-    
-    <!-- Видео 2 -->
-    <div class="video-container">
-        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    
-    <!-- Добавьте остальные видео по аналогии -->
 
-    <script>
-    // Принудительное 4K через изменение параметров после загрузки
-    function force4K() {
-        const iframes = document.querySelectorAll('iframe[src*="youtube.com"]');
-        
-        iframes.forEach(iframe => {
-            // Добавляем параметры для максимального качества
-            const newSrc = iframe.src.includes('?') 
-                ? iframe.src + '&vq=hd2160&highres=1' 
-                : iframe.src + '?vq=hd2160&highres=1';
-            
-            // Обновляем iframe
-            iframe.src = newSrc;
-            
-            // Дополнительные попытки установить качество
-            iframe.onload = function() {
+  <!-- Видео 1 -->
+  <div class="video-container">
+    <div id="player1"></div>
+  </div>
+  <div class="video-spacer"></div>
+
+  <!-- Видео 2 -->
+  <div class="video-container">
+    <div id="player2"></div>
+  </div>
+  <div class="video-spacer"></div>
+
+  <!-- Видео 3 -->
+  <div class="video-container">
+    <div id="player3"></div>
+  </div>
+  <div class="video-spacer"></div>
+
+  <!-- YouTube IFrame API -->
+  <script>
+    // Сюда вставь свои ID видео
+    const videoIds = [
+      'mEYsRvAUNQ8',  // Замени на свой ID
+      'mEYsRvAUNQ8',
+      'mEYsRvAUNQ8'
+    ];
+
+    // Массив плееров
+    let players = [];
+
+    // Функция загрузки плееров
+    function onYouTubeIframeAPIReady() {
+      videoIds.forEach((id, index) => {
+        const player = new YT.Player(`player${index + 1}`, {
+          videoId: id,
+          playerVars: {
+            'autoplay': 1,
+            'mute': 1,
+            'controls': 1,
+            'rel': 0,
+            'modestbranding': 1,
+            'fs': 1,
+            'playsinline': 1,
+            'highres': 1,
+            'vq': 'hd2160' // Предпочитаем 4K
+          },
+          events: {
+            'onReady': (event) => {
+              setTimeout(() => {
                 try {
-                    iframe.contentWindow.postMessage(JSON.stringify({
-                        event: 'command',
-                        func: 'setPlaybackQuality',
-                        args: ['hd2160']
-                    }), '*');
-                } catch(e) {}
-            };
+                  event.target.setPlaybackQuality('hd2160'); // Пробуем 4K
+                } catch (e) {}
+              }, 1000);
+            },
+            'onStateChange': (event) => {
+              if (event.data === YT.PlayerState.PLAYING) {
+                // Пытаемся установить 4K каждые 3 секунды
+                setInterval(() => {
+                  try {
+                    event.target.setPlaybackQuality('hd2160');
+                  } catch (e) {}
+                }, 3000);
+              }
+            }
+          }
         });
+        players.push(player);
+      });
     }
 
-    // Повторяем попытки установить качество
-    setTimeout(force4K, 1000);
-    setTimeout(force4K, 3000);
-    setTimeout(force4K, 5000);
-    window.addEventListener('load', force4K);
-    </script>
+    // Загружаем YouTube API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api ";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  </script>
+
 </body>
 </html>
