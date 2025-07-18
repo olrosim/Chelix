@@ -7,78 +7,80 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            background-color: black; /* Чёрный фон для промежутков */
-            overflow-x: hidden; /* Убираем горизонтальную прокрутку */
-        }
-        
-        .video-row {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+            background-color: black;
         }
         
         .video-container {
-            width: 100%;
-            margin-bottom: 15px; /* Чёрный промежуток между видео */
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .video-spacer {
+            height: 100px;
+            background-color: black;
         }
         
         iframe {
             width: 100%;
-            height: calc(20vh - 3px); /* Равномерно распределяем высоту */
+            height: 100%;
             border: none;
             display: block;
         }
     </style>
 </head>
 <body>
-    <div class="video-row">
-        <!-- Видео 1 -->
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-                allowfullscreen
-                allow="autoplay"
-            ></iframe>
-        </div>
-        
-        <!-- Чёрный промежуток автоматически создаётся через margin-bottom -->
-        
-        <!-- Видео 2 -->
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-                allowfullscreen
-                allow="autoplay"
-            ></iframe>
-        </div>
-        
-        <!-- Видео 3 -->
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-                allowfullscreen
-                allow="autoplay"
-            ></iframe>
-        </div>
-        
-        <!-- Видео 4 -->
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-                allowfullscreen
-                allow="autoplay"
-            ></iframe>
-        </div>
-        
-        <!-- Видео 5 -->
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
-                allowfullscreen
-                allow="autoplay"
-            ></iframe>
-        </div>
+    <!-- Видео 1 -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+    </div>
+    
+    <div class="video-spacer"></div>
+    
+    <!-- Видео 2 -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+    </div>
+    
+    <div class="video-spacer"></div>
+    
+    <!-- Видео 3 -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+    </div>
+    
+    <div class="video-spacer"></div>
+    
+    <!-- Видео 4 -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
+    </div>
+    
+    <div class="video-spacer"></div>
+    
+    <!-- Видео 5 -->
+    <div class="video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/mEYsRvAUNQ8?autoplay=1&mute=1&controls=1" 
+            allowfullscreen
+            allow="autoplay"
+        ></iframe>
     </div>
 </body>
 </html>
