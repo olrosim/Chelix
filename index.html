@@ -18,6 +18,7 @@
             background-color: #000;
             color: #fff;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         /* Контейнер для контента */
@@ -61,14 +62,20 @@
         }
 
         .image-item {
-            flex: 1 1 calc(50% - 25px); /* 2 изображения в ряд с отступом 50px */
+            flex: 1 1 calc(50% - 25px);
             max-width: calc(50% - 25px);
+            cursor: pointer;
         }
 
         .image-item img {
             width: 100%;
             height: auto;
             display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .image-item:hover img {
+            transform: scale(1.02);
         }
 
         /* Текстовые блоки */
@@ -76,13 +83,46 @@
             margin-bottom: 100px;
         }
 
-        /* Адаптив для мобильных */
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        /* Адаптив */
         @media (max-width: 768px) {
             .image-item {
-                flex: 1 1 100%; /* На мобилах 1 изображение в ряд */
+                flex: 1 1 100%;
                 max-width: 100%;
             }
-
             .image-grid {
                 gap: 20px;
             }
@@ -94,40 +134,71 @@
         <!-- Секция с видео -->
         <section class="video-section">
             <div class="video-wrapper">
-                <!-- Вставьте свою ссылку на YouTube (замените YOUR_VIDEO_ID) -->
-                <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&mute=1" allow="autoplay" frameborder="0" allowfullscreen></iframe>
+                <iframe src="https://www.youtube.com/embed/mDt0l60TQ1w?autoplay=1&mute=1" allow="autoplay" frameborder="0" allowfullscreen></iframe>
             </div>
             <div class="text-block">
-                <h2>Название видео</h2>
-                <p>Описание видео. Здесь может быть ваш текст.</p>
+                <h2>Пример видео</h2>
+                <p>Это тестовое видео с YouTube для демонстрации работы страницы.</p>
             </div>
         </section>
 
         <!-- Секция с изображениями -->
         <section class="image-section">
             <div class="image-grid">
-                <!-- 1-я пара изображений -->
-                <div class="image-item">
-                    <img src="https://via.placeholder.com/800x500" alt="Изображение 1">
+                <div class="image-item" onclick="openModal(this)">
+                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 1">
                 </div>
-                <div class="image-item">
-                    <img src="https://via.placeholder.com/800x500" alt="Изображение 2">
+                <div class="image-item" onclick="openModal(this)">
+                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 2">
                 </div>
             </div>
             <div class="image-grid">
-                <!-- 2-я пара изображений -->
-                <div class="image-item">
-                    <img src="https://via.placeholder.com/800x500" alt="Изображение 3">
+                <div class="image-item" onclick="openModal(this)">
+                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 3">
                 </div>
-                <div class="image-item">
-                    <img src="https://via.placeholder.com/800x500" alt="Изображение 4">
+                <div class="image-item" onclick="openModal(this)">
+                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 4">
                 </div>
             </div>
             <div class="text-block">
-                <h2>Название галереи</h2>
-                <p>Описание изображений. Здесь может быть ваш текст.</p>
+                <h2>Пример галереи</h2>
+                <p>Это тестовые изображения для демонстрации работы галереи.</p>
             </div>
         </section>
     </div>
+
+    <!-- Модальное окно -->
+    <div class="modal" id="imageModal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <img id="expandedImage" src="" alt="Увеличенное изображение">
+        </div>
+    </div>
+
+    <script>
+        function openModal(element) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("expandedImage");
+            modal.style.display = "flex";
+            modalImg.src = element.querySelector("img").src;
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        document.addEventListener("click", (e) => {
+            const modal = document.getElementById("imageModal");
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
