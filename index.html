@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Одностраничный сайт</title>
     <style>
-        /* Сброс стандартных отступов */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Основные стили */
         body {
             font-family: Arial, sans-serif;
             background-color: #000;
@@ -21,14 +19,12 @@
             overflow-x: hidden;
         }
 
-        /* Контейнер для контента */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Секция с видео */
         .video-section {
             margin-bottom: 100px;
         }
@@ -36,7 +32,7 @@
         .video-wrapper {
             width: 100%;
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             margin-bottom: 20px;
         }
 
@@ -49,7 +45,6 @@
             border: none;
         }
 
-        /* Секция с изображениями */
         .image-section {
             margin-bottom: 100px;
         }
@@ -78,12 +73,10 @@
             transform: scale(1.02);
         }
 
-        /* Текстовые блоки */
         .text-block {
             margin-bottom: 100px;
         }
 
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -117,7 +110,6 @@
             cursor: pointer;
         }
 
-        /* Адаптив */
         @media (max-width: 768px) {
             .image-item {
                 flex: 1 1 100%;
@@ -134,11 +126,12 @@
         <!-- Секция с видео -->
         <section class="video-section">
             <div class="video-wrapper">
-                <iframe src="https://www.youtube.com/embed/mDt0l60TQ1w?autoplay=1&mute=1" allow="autoplay" frameborder="0" allowfullscreen></iframe>
+                <!-- Видео с бесконечным повторением -->
+                <iframe id="yt-video" src="https://www.youtube.com/embed/mDt0l60TQ1w?autoplay=1&mute=1&loop=1&playlist=mDt0l60TQ1w" allow="autoplay" frameborder="0" allowfullscreen></iframe>
             </div>
             <div class="text-block">
                 <h2>Пример видео</h2>
-                <p>Это тестовое видео с YouTube для демонстрации работы страницы.</p>
+                <p>Это тестовое видео с автоматическим повторением.</p>
             </div>
         </section>
 
@@ -146,23 +139,23 @@
         <section class="image-section">
             <div class="image-grid">
                 <div class="image-item" onclick="openModal(this)">
-                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 1">
+                    <img src="blob:https://www.timeanddate.com/514683d0-c92c-4e4b-a3c4-0ca5c51292bd" alt="Изображение 1">
                 </div>
                 <div class="image-item" onclick="openModal(this)">
-                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 2">
+                    <img src="blob:https://www.timeanddate.com/514683d0-c92c-4e4b-a3c4-0ca5c51292bd" alt="Изображение 2">
                 </div>
             </div>
             <div class="image-grid">
                 <div class="image-item" onclick="openModal(this)">
-                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 3">
+                    <img src="blob:https://www.timeanddate.com/514683d0-c92c-4e4b-a3c4-0ca5c51292bd" alt="Изображение 3">
                 </div>
                 <div class="image-item" onclick="openModal(this)">
-                    <img src="https://cdna.artstation.com/p/assets/images/images/088/136/612/large/ch-lix-17.jpg?1747535818" alt="Изображение 4">
+                    <img src="blob:https://www.timeanddate.com/514683d0-c92c-4e4b-a3c4-0ca5c51292bd" alt="Изображение 4">
                 </div>
             </div>
             <div class="text-block">
                 <h2>Пример галереи</h2>
-                <p>Это тестовые изображения для демонстрации работы галереи.</p>
+                <p>Это тестовые изображения из blob-ссылки.</p>
             </div>
         </section>
     </div>
@@ -176,6 +169,7 @@
     </div>
 
     <script>
+        // Функции для модального окна
         function openModal(element) {
             const modal = document.getElementById("imageModal");
             const modalImg = document.getElementById("expandedImage");
@@ -199,6 +193,21 @@
                 closeModal();
             }
         });
+
+        // Автоповтор видео
+        const videoIframe = document.getElementById('yt-video');
+        
+        // Проверяем готовность видео каждую секунду
+        setInterval(() => {
+            try {
+                // Если видео закончилось, перезагружаем его
+                if(videoIframe.contentWindow.document.querySelector('.ended-mode')) {
+                    videoIframe.src = videoIframe.src; // Перезагрузка iframe
+                }
+            } catch(e) {
+                console.log("Ожидаем загрузку видео");
+            }
+        }, 1000);
     </script>
 </body>
 </html>
