@@ -680,147 +680,59 @@
     <!-- Spacer between videos -->
     <div class="spacer"></div>
 
-
-
-    
-
-
-
-    
-
-
-
-
-    
+   
 
 
     
     
 
-
-    
-    
-
-
-    
-
-    
-
-
-
-
-    
-
-    
-
-
-
-    
-
-
-    
-
-
-
-    
-
-
-
-    
-
-
-
-    
-
-
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
     
 
     <script>
-        // YouTube API for both players
+        // Универсальный обработчик для всех видео
+        var players = {}; // Хранит все плееры
+
+        // Загрузка YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        var player1, player2;
+        // Инициализация всех плееров
         function onYouTubeIframeAPIReady() {
-            player1 = new YT.Player('ytplayer1', {
-                events: {
-                    'onReady': onPlayer1Ready,
-                    'onStateChange': onPlayer1StateChange
-                }
+            document.querySelectorAll('iframe[id^="ytplayer"]').forEach(iframe => {
+                const id = iframe.id;
+                players[id] = new YT.Player(id, {
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
             });
+        }
+
+        // Обработчик готовности плеера
+        function onPlayerReady(event) {
+            event.target.setPlaybackQuality('hd1080');
+            event.target.playVideo();
+            event.target.a.style.filter = 'brightness(1)';
             
-            player2 = new YT.Player('ytplayer2', {
-                events: {
-                    'onReady': onPlayer2Ready,
-                    'onStateChange': onPlayer2StateChange
-                }
-            });
-        }
-
-        function onPlayer1Ready(event) {
-            event.target.setPlaybackQuality('hd1080');
-            event.target.playVideo();
-            document.getElementById('ytplayer1').style.filter = 'brightness(1)';
-            enterFullscreen(document.querySelector('.fullscreen-section:nth-of-type(2)'));
-        }
-
-        function onPlayer2Ready(event) {
-            event.target.setPlaybackQuality('hd1080');
-            event.target.playVideo();
-            document.getElementById('ytplayer2').style.filter = 'brightness(1)';
-        }
-
-        function onPlayer1StateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                player1.seekTo(0);
-                player1.playVideo();
+            // Авто-полноэкран для первого видео
+            if (event.target.a.id === 'ytplayer1') {
+                enterFullscreen(event.target.a.closest('.fullscreen-section'));
             }
         }
 
-        function onPlayer2StateChange(event) {
+        // Обработчик изменения состояния
+        function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
-                player2.seekTo(0);
-                player2.playVideo();
+                event.target.seekTo(0);
+                event.target.playVideo();
             }
         }
 
-        // Fullscreen handling
+        // Функция полноэкранного режима
         function enterFullscreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
@@ -833,7 +745,7 @@
             }
         }
 
-        // Auto-scroll to sections
+        // Навигация между секциями
         let currentSection = 0;
         const sections = document.querySelectorAll('.fullscreen-section');
         
@@ -842,7 +754,7 @@
             sections[currentSection].scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Keyboard navigation
+        // Клавиатурная навигация
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowDown') {
                 scrollToSection(currentSection + 1);
@@ -851,7 +763,7 @@
             }
         });
 
-        // Touch events for mobile
+        // Свайп-навигация для мобильных
         let touchStartY = 0;
         document.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
@@ -872,6 +784,4 @@
     </script>
 </body>
 </html>
-
-
 
