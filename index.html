@@ -21,39 +21,31 @@
             height: 100%;
             position: relative;
             background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
         }
         
         #ytplayer {
             width: 100%;
             height: 100%;
             border: none;
+            display: none; /* Сначала скрыт */
         }
         
-        /* Стиль для текстового блока */
         #text-content {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background: #000;
+            color: #fff;
+        }
+        
+        .text-page {
             display: none;
-            width: 90%;
-            max-width: 800px;
-            line-height: 1.8;
-            font-size: 16px;
         }
         
-        #text-content h2 {
-            color: #43ff64;
-            border-bottom: 2px solid #43ff64;
-            padding-bottom: 10px;
-            margin-top: 30px;
-        }
-        
-        #text-content ul {
-            margin: 15px 0;
-            padding-left: 20px;
+        .text-page.active {
+            display: block;
         }
         
         .thumbnails-column {
@@ -102,6 +94,16 @@
             font-weight: bold;
         }
         
+        .text-thumbnail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-size: 16px;
+            padding: 15px;
+        }
+
         /* Скрываем scrollbar для Chrome/Safari */
         .thumbnails-column::-webkit-scrollbar {
             width: 8px;
@@ -125,31 +127,35 @@
 </head>
 <body>
     <div class="main-player">
+        <div id="text-content">
+            <div class="text-page active" id="page1">
+                <h2>Информационная страница 1</h2>
+                <p>Это первая текстовая страница. Вы можете добавить сюда любую информацию.</p>
+                <p>Используйте кнопки ниже для навигации между страницами.</p>
+                <button onclick="showTextPage(2)">Следующая страница</button>
+            </div>
+            
+            <div class="text-page" id="page2">
+                <h2>Информационная страница 2</h2>
+                <p>Это вторая текстовая страница с дополнительной информацией.</p>
+                <p>Здесь может быть описание функционала или другие детали.</p>
+                <button onclick="showTextPage(1)">Предыдущая страница</button>
+                <button onclick="showTextPage(3)">Следующая страница</button>
+            </div>
+            
+            <div class="text-page" id="page3">
+                <h2>Информационная страница 3</h2>
+                <p>Финальная текстовая страница.</p>
+                <p>После этого можно перейти к просмотру видео.</p>
+                <button onclick="showTextPage(2)">Предыдущая страница</button>
+                <button onclick="startVideos()">Начать просмотр видео</button>
+            </div>
+        </div>
         <iframe id="ytplayer"
-                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1"
+                src="https://www.youtube.com/embed/0AimnC3n1lY?enablejsapi=1"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
-
-        <!-- Текстовый блок (показывается вместо видео при клике на миниатюру 0) -->
-        <div id="text-content">
-            <h2>О проекте</h2>
-            <p>Это интерактивная галерея видео. Вы можете выбирать видео из списка справа. Все видео воспроизводятся через YouTube.</p>
-            
-            <h2>Функции</h2>
-            <ul>
-                <li>Автовоспроизведение при старте</li>
-                <li>Автопереход к следующему видео</li>
-                <li>Кликабельные миниатюры</li>
-                <li>Активное видео выделено зелёной рамкой</li>
-                <li>Плавная прокрутка к выбранному видео</li>
-            </ul>
-
-            <h2>Список видео</h2>
-            <ol id="video-list">
-                <!-- Заполняется через JS -->
-            </ol>
-        </div>
     </div>
     
     <div class="thumbnails-column" id="thumbnails-container">
@@ -194,54 +200,37 @@
         
         const totalThumbnails = 31;
         let player;
-        let currentVideoIndex = 0;
-        
-        // Элементы
-        const ytPlayer = document.getElementById('ytplayer');
-        const textContent = document.getElementById('text-content');
+        let currentVideoIndex = -1; // -1 означает текстовый режим
         
         // Инициализация
         function init() {
             createThumbnails();
             loadYouTubeAPI();
-            populateVideoList(); // Заполняем список видео
-        }
-        
-        // Заполняем список видео в текстовом блоке
-        function populateVideoList() {
-            const list = document.getElementById('video-list');
-            videos.forEach((v, i) => {
-                const li = document.createElement('li');
-                li.textContent = `${v.title} (ID: ${v.id})`;
-                list.appendChild(li);
-            });
+            showTextPage(1); // Показываем первую текстовую страницу
         }
         
         // Создание миниатюр
         function createThumbnails() {
             const container = document.getElementById('thumbnails-container');
             
-            // Добавляем миниатюру №0 — текстовая
+            // Текстовая миниатюра (0)
             const textThumb = document.createElement('div');
-            textThumb.className = 'thumbnail';
+            textThumb.className = 'thumbnail text-thumbnail active';
             textThumb.innerHTML = `
-                <div style="display: flex; justify-content: center; align-items: center; height: 100%; background: #1a1a1a; font-size: 18px; font-weight: bold; color: #ccc;">
-                    О ПРОЕКТЕ
-                </div>
+                <div>Текстовая информация</div>
                 <div class="thumbnail-number">0</div>
             `;
             textThumb.addEventListener('click', () => {
-                selectTextInfo();
+                showTextPage(1);
             });
             container.appendChild(textThumb);
-
-            // Остальные миниатюры (1–31)
+            
+            // Видео миниатюры (1-31)
             for (let i = 0; i < totalThumbnails; i++) {
                 const videoIndex = i % videos.length;
                 const video = videos[videoIndex];
                 const thumbnail = document.createElement('div');
                 thumbnail.className = 'thumbnail';
-                if (i === 0) thumbnail.classList.add('active'); // активно первое видео
                 
                 thumbnail.innerHTML = `
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
@@ -256,21 +245,35 @@
             }
         }
         
-        // Показать текстовую информацию
-        function selectTextInfo() {
-            if (currentVideoIndex === -1) return;
+        // Показать текстовую страницу
+        function showTextPage(pageNum) {
+            // Скрываем видео, показываем текстовый контент
+            document.getElementById('ytplayer').style.display = 'none';
+            document.getElementById('text-content').style.display = 'block';
             
-            // Убираем активные классы
+            // Скрываем все страницы, показываем нужную
+            document.querySelectorAll('.text-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            
+            // Обновляем активную миниатюру
             document.querySelectorAll('.thumbnail').forEach(thumb => {
                 thumb.classList.remove('active');
             });
-            document.querySelector('.thumbnails-column').firstChild.classList.add('active');
+            document.querySelectorAll('.thumbnail')[0].classList.add('active');
             
-            // Скрываем плеер, показываем текст
-            ytPlayer.style.display = 'none';
-            textContent.style.display = 'block';
+            // Останавливаем видео, если оно играло
+            if (player && currentVideoIndex >= 0) {
+                player.pauseVideo();
+            }
             
-            currentVideoIndex = -1; // особое состояние
+            currentVideoIndex = -1;
+        }
+        
+        // Начать просмотр видео
+        function startVideos() {
+            selectVideo(0, videos[0].id);
         }
         
         // Выбор видео
@@ -284,21 +287,22 @@
             
             // Добавляем активный класс выбранной миниатюре
             const thumbs = document.querySelectorAll('.thumbnail');
-            thumbs[index + 1].classList.add('active'); // +1, потому что 0 — текст
+            thumbs[index + 1].classList.add('active'); // +1 потому что 0-я - текстовая
             
             // Прокручиваем к выбранной миниатюре
             thumbs[index + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             
-            // Показываем плеер, скрываем текст
-            ytPlayer.style.display = 'block';
-            textContent.style.display = 'none';
+            // Показываем плеер и скрываем текстовый контент
+            document.getElementById('text-content').style.display = 'none';
+            document.getElementById('ytplayer').style.display = 'block';
             
             // Меняем видео
             if (player) {
                 player.loadVideoById(videoId);
                 currentVideoIndex = index;
             } else {
-                ytPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
+                // Если API еще не загрузилось, меняем src iframe напрямую
+                document.getElementById('ytplayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
                 currentVideoIndex = index;
             }
         }
@@ -310,6 +314,7 @@
                 tag.src = "https://www.youtube.com/iframe_api";
                 const firstScriptTag = document.getElementsByTagName('script')[0];
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
                 window.onYouTubeIframeAPIReady = initPlayer;
             } else {
                 initPlayer();
@@ -328,13 +333,14 @@
         
         // Обработчик готовности плеера
         function onPlayerReady(event) {
+            // Устанавливаем качество по умолчанию
             event.target.setPlaybackQuality('hd1080');
-            event.target.playVideo();
         }
         
         // Обработчик изменения состояния
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
+            if (event.data === YT.PlayerState.ENDED && currentVideoIndex >= 0) {
+                // Автопереход к следующему видео при окончании
                 const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
                 const videoId = videos[nextIndex % videos.length].id;
                 selectVideo(nextIndex, videoId);
