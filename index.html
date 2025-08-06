@@ -3,75 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fullscreen YouTube Player</title>
+    <title>Dual Fullscreen YouTube Players</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background: #000;
             height: 100%;
         }
-        #video-container {
-            position: fixed;
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            border: none;
         }
-        #ytplayer {
-            width: 100%;
-            height: 100%;
+        #second-video {
+            top: 100vh; /* Размещаем второе видео под первым */
         }
     </style>
 </head>
 <body>
-    <div id="video-container">
-        <iframe id="ytplayer" 
+    <!-- Первое видео -->
+    <div class="video-container">
+        <iframe id="ytplayer1" 
                 src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
     </div>
 
+    <!-- Второе видео -->
+    <div class="video-container" id="second-video">
+        <iframe id="ytplayer2" 
+                src="https://www.youtube.com/embed/MW3tpuubqqU?autoplay=1&mute=1&loop=1&playlist=MW3tpuubqqU&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+    </div>
+
     <script>
-        // YouTube API for quality control
+        // YouTube API for both players
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        var player;
+        var player1, player2;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('ytplayer', {
+            player1 = new YT.Player('ytplayer1', {
                 events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onReady': onPlayer1Ready,
+                    'onStateChange': onPlayer1StateChange
+                }
+            });
+            
+            player2 = new YT.Player('ytplayer2', {
+                events: {
+                    'onReady': onPlayer2Ready,
+                    'onStateChange': onPlayer2StateChange
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            // Set quality to highest available
+        function onPlayer1Ready(event) {
             event.target.setPlaybackQuality('hd1080');
             event.target.playVideo();
-            
-            // Hide YouTube logo and controls completely
-            var iframe = document.getElementById('ytplayer');
-            iframe.style.filter = 'brightness(1)'; // Removes any overlay
+            document.getElementById('ytplayer1').style.filter = 'brightness(1)';
         }
 
-        function onPlayerStateChange(event) {
-            // Restart video when ended
+        function onPlayer2Ready(event) {
+            event.target.setPlaybackQuality('hd1080');
+            event.target.playVideo();
+            document.getElementById('ytplayer2').style.filter = 'brightness(1)';
+        }
+
+        function onPlayer1StateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
-                player.seekTo(0);
-                player.playVideo();
+                player1.seekTo(0);
+                player1.playVideo();
             }
         }
 
-        // Force fullscreen (works on most modern browsers)
-        function requestFullScreen() {
-            var element = document.documentElement;
+        function onPlayer2StateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                player2.seekTo(0);
+                player2.playVideo();
+            }
+        }
+
+        // Fullscreen handling
+        function requestFullScreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.mozRequestFullScreen) {
@@ -83,10 +112,14 @@
             }
         }
 
-        // Auto-enter fullscreen when page loads
-        window.onload = function() {
-            requestFullScreen();
-        };
+        // Auto-scroll to second video after first ends (optional)
+        function onPlayer1StateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                player1.seekTo(0);
+                player1.playVideo();
+                // window.scrollTo({top: window.innerHeight, behavior: 'smooth'});
+            }
+        }
     </script>
 </body>
 </html>
