@@ -84,7 +84,9 @@
         const config = {
             videoId: 'XfxyGbh5dmI',
             videoCount: 20,
-            posterQuality: 'maxresdefault'
+            posterQuality: 'maxresdefault',
+            defaultQuality: 'hd1080',
+            playerParams: 'autoplay=1&mute=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1'
         };
         
         // Состояние
@@ -117,8 +119,9 @@
                     <div class="loading-spinner"></div>
                     <div class="video-caption">Video ${i+1}</div>
                     <iframe class="video-iframe"
-                            data-src="https://www.youtube.com/embed/${config.videoId}?enablejsapi=1&autoplay=1&mute=1&playsinline=1"
+                            data-src="https://www.youtube.com/embed/${config.videoId}?${config.playerParams}"
                             frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                             allowfullscreen></iframe>
                 `;
                 
@@ -155,7 +158,12 @@
                 state.players[index] = new YT.Player(iframe, {
                     events: {
                         'onReady': (e) => onPlayerReady(e, index),
-                        'onStateChange': (e) => onPlayerStateChange(e, index)
+                        'onStateChange': (e) => onPlayerStateChange(e, index),
+                        'onPlaybackQualityChange': (e) => {
+                            if (e.data !== config.defaultQuality) {
+                                e.target.setPlaybackQuality(config.defaultQuality);
+                            }
+                        }
                     }
                 });
             });
@@ -163,14 +171,26 @@
         
         // Обработчик готовности плеера
         function onPlayerReady(event, index) {
-            console.log(`Player ${index} ready`);
+            // Устанавливаем качество по умолчанию
+            event.target.setPlaybackQuality(config.defaultQuality);
+            
+            // Если это активное видео, запускаем воспроизведение
+            if (state.activeVideo === index) {
+                event.target.playVideo();
+            }
         }
         
         // Обработчик изменения состояния
         function onPlayerStateChange(event, index) {
+            // Бесконечное повторение видео
             if (event.data === YT.PlayerState.ENDED) {
                 event.target.seekTo(0);
                 event.target.playVideo();
+            }
+            
+            // При воспроизведении проверяем качество
+            if (event.data === YT.PlayerState.PLAYING) {
+                event.target.setPlaybackQuality(config.defaultQuality);
             }
         }
         
@@ -192,6 +212,7 @@
             
             if (state.players[index]) {
                 state.players[index].playVideo();
+                state.players[index].setPlaybackQuality(config.defaultQuality);
             }
         }
         
