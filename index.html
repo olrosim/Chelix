@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fullscreen Video Gallery</title>
+    <title>Optimized Video Gallery</title>
     <style>
         body, html {
             margin: 0;
@@ -13,21 +13,25 @@
             font-family: Arial, sans-serif;
             line-height: 1.5;
             overflow-x: hidden;
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
         }
         .intro-text {
             padding: 40px;
             max-width: 800px;
             margin: 0 auto;
-            height: calc(100vh - 80px);
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            scroll-snap-align: start;
         }
-        .fullscreen-section {
+        .video-section {
             width: 100%;
             height: 100vh;
             position: relative;
             overflow: hidden;
+            scroll-snap-align: start;
         }
         .video-container {
             position: absolute;
@@ -40,6 +44,7 @@
             width: 100%;
             height: 100%;
             border: none;
+            background: #000;
         }
         .caption {
             position: absolute;
@@ -55,8 +60,14 @@
         .spacer {
             height: 100px;
             background: #000;
+            scroll-snap-align: start;
         }
     </style>
+
+
+
+
+
 </head>
 <body>
     <!-- Intro text section -->
@@ -680,47 +691,127 @@
     <!-- Spacer between videos -->
     <div class="spacer"></div>
 
-   
 
 
-    
-    
 
 
-    
+     <script>
+        // Конфигурация YouTube
+        const youtubeConfig = {
+            autoplay: 1,
+            mute: 1,
+            loop: 1,
+            controls: 0,
+            rel: 0,
+            modestbranding: 1,
+            fs: 0,
+            disablekb: 1,
+            iv_load_policy: 3,
+            showinfo: 0
+        };
 
-    <script>
-        // Универсальный обработчик для всех видео
-        var players = {}; // Хранит все плееры
+        // Состояние приложения
+        const appState = {
+            players: {},
+            activePlayer: null,
+            isScrolling: false,
+            lastScrollTime: 0
+        };
 
-        // Загрузка YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        // Инициализация YouTube API
+        function initYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        // Создание URL с параметрами
+        function getYouTubeUrl(videoId) {
+            const params = new URLSearchParams();
+            Object.entries(youtubeConfig).forEach(([key, value]) => {
+                params.set(key, value);
+            });
+            params.set('playlist', videoId); // Для loop
+            return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+        }
+
+        // Инициализация Intersection Observer
+        function initIntersectionObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                const now = Date.now();
+                
+                // Защита от частых срабатываний
+                if (now - appState.lastScrollTime < 100) return;
+                appState.lastScrollTime = now;
+
+                entries.forEach(entry => {
+                    const iframe = entry.target.querySelector('iframe');
+                    if (!iframe) return;
+
+                    const player = appState.players[iframe.id];
+                    if (!player) return;
+
+                    if (entry.isIntersecting) {
+                        // Видео в зоне видимости
+                        if (appState.activePlayer && appState.activePlayer !== player) {
+                            appState.activePlayer.pauseVideo();
+                            appState.activePlayer.setPlaybackQuality('default');
+                        }
+                        
+                        player.playVideo();
+                        player.setPlaybackQuality('hd1080');
+                        appState.activePlayer = player;
+                    } else {
+                        // Видео вне зоны видимости
+                        if (appState.activePlayer === player) {
+                            player.pauseVideo();
+                            player.setPlaybackQuality('default');
+                            appState.activePlayer = null;
+                        }
+                    }
+                });
+            }, { 
+                threshold: 0.7,
+                rootMargin: "0px 0px -100px 0px" 
+            });
+
+            document.querySelectorAll('.video-section').forEach(section => {
+                observer.observe(section);
+            });
+        }
 
         // Инициализация всех плееров
         function onYouTubeIframeAPIReady() {
-            document.querySelectorAll('iframe[id^="ytplayer"]').forEach(iframe => {
-                const id = iframe.id;
-                players[id] = new YT.Player(id, {
+            document.querySelectorAll('.video-section').forEach((section, index) => {
+                const iframe = section.querySelector('iframe');
+                if (!iframe) return;
+
+                const videoId = iframe.dataset.src.split('/embed/')[1].split('?')[0];
+                iframe.src = getYouTubeUrl(videoId);
+
+                appState.players[iframe.id] = new YT.Player(iframe.id, {
                     events: {
-                        'onReady': onPlayerReady,
+                        'onReady': (e) => onPlayerReady(e, iframe.id),
                         'onStateChange': onPlayerStateChange
                     }
                 });
             });
+
+            initIntersectionObserver();
+            setupSmoothScrolling();
         }
 
         // Обработчик готовности плеера
-        function onPlayerReady(event) {
+        function onPlayerReady(event, playerId) {
             event.target.setPlaybackQuality('hd1080');
-            event.target.playVideo();
             event.target.a.style.filter = 'brightness(1)';
             
             // Авто-полноэкран для первого видео
-            if (event.target.a.id === 'ytplayer1') {
-                enterFullscreen(event.target.a.closest('.fullscreen-section'));
+            if (playerId === 'ytplayer1') {
+                event.target.playVideo();
+                appState.activePlayer = event.target;
+                enterFullscreen(event.target.a.closest('.video-section'));
             }
         }
 
@@ -745,43 +836,89 @@
             }
         }
 
-        // Навигация между секциями
-        let currentSection = 0;
-        const sections = document.querySelectorAll('.fullscreen-section');
-        
-        function scrollToSection(index) {
-            currentSection = Math.max(0, Math.min(index, sections.length - 1));
-            sections[currentSection].scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Клавиатурная навигация
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') {
-                scrollToSection(currentSection + 1);
-            } else if (e.key === 'ArrowUp') {
-                scrollToSection(currentSection - 1);
-            }
-        });
-
-        // Свайп-навигация для мобильных
-        let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        }, { passive: true });
-
-        document.addEventListener('touchend', (e) => {
-            const touchEndY = e.changedTouches[0].clientY;
-            const diff = touchStartY - touchEndY;
+        // Настройка плавной прокрутки
+        function setupSmoothScrolling() {
+            const sections = document.querySelectorAll('.video-section, .intro-text');
+            let isScrolling = false;
             
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    scrollToSection(currentSection + 1);
-                } else {
-                    scrollToSection(currentSection - 1);
+            // Обработчик колеса мыши
+            window.addEventListener('wheel', (e) => {
+                if (isScrolling) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (Math.abs(e.deltaY) > 50) {
+                    e.preventDefault();
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    scrollToNextSection(direction);
+                }
+            }, { passive: false });
+
+            // Обработчик касаний для мобильных
+            let touchStartY = 0;
+            document.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            document.addEventListener('touchend', (e) => {
+                const touchEndY = e.changedTouches[0].clientY;
+                const diff = touchStartY - touchEndY;
+                
+                if (Math.abs(diff) > 50 && !isScrolling) {
+                    const direction = diff > 0 ? 1 : -1;
+                    scrollToNextSection(direction);
+                }
+            }, { passive: true });
+
+            // Прокрутка к следующей секции
+            function scrollToNextSection(direction) {
+                if (isScrolling) return;
+                
+                const currentScroll = window.scrollY;
+                let targetSection = null;
+                let minDistance = Infinity;
+
+                sections.forEach(section => {
+                    const distance = Math.abs(section.offsetTop - currentScroll);
+                    if ((direction > 0 && section.offsetTop > currentScroll + 10) || 
+                        (direction < 0 && section.offsetTop < currentScroll - 10)) {
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            targetSection = section;
+                        }
+                    }
+                });
+
+                if (targetSection) {
+                    isScrolling = true;
+                    window.scrollTo({
+                        top: targetSection.offsetTop,
+                        behavior: 'smooth'
+                    });
+
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 800);
                 }
             }
-        }, { passive: true });
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            initYouTubeAPI();
+        });
     </script>
 </body>
 </html>
+
+   
+
+
+    
+    
+
+
+
+
 
