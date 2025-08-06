@@ -1,199 +1,70 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Одностраничный сайт</title>
+    <title>YouTube Player with Auto-Replay</title>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: #fff;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .video-section {
-            margin-bottom: 100px;
-        }
-
-        .video-wrapper {
-            width: 100%;
-            position: relative;
-            padding-bottom: 56.25%;
-            margin-bottom: 20px;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .image-section {
-            margin-bottom: 100px;
-        }
-
-        .image-grid {
+            background: #000;
             display: flex;
-            flex-wrap: wrap;
-            gap: 50px;
-            margin-bottom: 20px;
-        }
-
-        .image-item {
-            flex: 1 1 calc(50% - 25px);
-            max-width: calc(50% - 25px);
-            cursor: pointer;
-        }
-
-        .image-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .image-item:hover img {
-            transform: scale(1.02);
-        }
-
-        .text-block {
-            margin-bottom: 100px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
-
-        .modal-content {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .modal-content img {
+        .video-container {
             width: 100%;
-            height: auto;
-            object-fit: contain;
+            max-width: 1200px;
+            position: relative;
         }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: #fff;
-            font-size: 40px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .image-item {
-                flex: 1 1 100%;
-                max-width: 100%;
-            }
-            .image-grid {
-                gap: 20px;
-            }
+        .video-container iframe {
+            width: 100%;
+            height: 56.25vw;
+            max-height: 675px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Секция с видео -->
-        <section class="video-section">
-            <div class="video-wrapper">
-                <!-- Видео с бесконечным повторением -->
-                <iframe id="yt-video" src="https://www.youtube.com/embed/mDt0l60TQ1w?autoplay=1&mute=1&loop=1&playlist=mDt0l60TQ1w" allow="autoplay" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <div class="text-block">
-                <h2>Пример видео</h2>
-                <p>Это тестовое видео с автоматическим повторением.</p>
-            </div>
-        </section>
-
-        <!-- Секция с изображениями -->
-        <section class="image-section">
-            <div class="image-grid">
-                <div class="image-item" onclick="openModal(this)">
-                    <!-- Замените на свои реальные ссылки -->
-                    <img src="https://example.com/your-image1.jpg" alt="Изображение 1">
-                </div>
-                <div class="image-item" onclick="openModal(this)">
-                    <img src="https://example.com/your-image2.jpg" alt="Изображение 2">
-                </div>
-            </div>
-            <div class="image-grid">
-                <div class="image-item" onclick="openModal(this)">
-                    <img src="https://example.com/your-image3.jpg" alt="Изображение 3">
-                </div>
-                <div class="image-item" onclick="openModal(this)">
-                    <img src="https://example.com/your-image4.jpg" alt="Изображение 4">
-                </div>
-            </div>
-            <div class="text-block">
-                <h2>Пример галереи</h2>
-                <p>Здесь будут ваши изображения.</p>
-            </div>
-        </section>
-    </div>
-
-    <!-- Модальное окно -->
-    <div class="modal" id="imageModal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <div class="modal-content">
-            <img id="expandedImage" src="" alt="Увеличенное изображение">
-        </div>
+    <div class="video-container">
+        <iframe id="ytplayer" 
+                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&origin=http://yourdomain.com" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
     </div>
 
     <script>
-        // Функции для модального окна
-        function openModal(element) {
-            const modal = document.getElementById("imageModal");
-            const modalImg = document.getElementById("expandedImage");
-            modal.style.display = "flex";
-            modalImg.src = element.querySelector("img").src;
+        // YouTube API for quality control
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytplayer', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
         }
 
-        function closeModal() {
-            document.getElementById("imageModal").style.display = "none";
+        function onPlayerReady(event) {
+            // Set quality to highest available
+            event.target.setPlaybackQuality('hd1080');
+            event.target.playVideo();
         }
 
-        document.addEventListener("click", (e) => {
-            const modal = document.getElementById("imageModal");
-            if (e.target === modal) {
-                closeModal();
+        function onPlayerStateChange(event) {
+            // Restart video when ended
+            if (event.data === YT.PlayerState.ENDED) {
+                player.seekTo(0);
+                player.playVideo();
             }
-        });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                closeModal();
-            }
-        });
+        }
     </script>
 </body>
 </html>
