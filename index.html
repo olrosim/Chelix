@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Player with Auto-Replay</title>
+    <title>Fullscreen YouTube Player</title>
     <style>
-        body {
+        body, html {
             margin: 0;
             padding: 0;
+            overflow: hidden;
             background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            height: 100%;
         }
-        .video-container {
+        #video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 1200px;
-            position: relative;
+            height: 100%;
         }
-        .video-container iframe {
+        #ytplayer {
             width: 100%;
-            height: 56.25vw;
-            max-height: 675px;
+            height: 100%;
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
+    <div id="video-container">
         <iframe id="ytplayer" 
-                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&origin=http://yourdomain.com" 
+                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
@@ -56,6 +55,10 @@
             // Set quality to highest available
             event.target.setPlaybackQuality('hd1080');
             event.target.playVideo();
+            
+            // Hide YouTube logo and controls completely
+            var iframe = document.getElementById('ytplayer');
+            iframe.style.filter = 'brightness(1)'; // Removes any overlay
         }
 
         function onPlayerStateChange(event) {
@@ -65,6 +68,25 @@
                 player.playVideo();
             }
         }
+
+        // Force fullscreen (works on most modern browsers)
+        function requestFullScreen() {
+            var element = document.documentElement;
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        }
+
+        // Auto-enter fullscreen when page loads
+        window.onload = function() {
+            requestFullScreen();
+        };
     </script>
 </body>
 </html>
