@@ -9,138 +9,171 @@
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
-            background: #000;
+            background: #111;
             color: #fff;
-            overflow-x: hidden;
-        }
-        
-        #video-gallery {
             display: flex;
-            flex-direction: column;
-        }
-        
-        .video-container {
-            width: 100vw;
             height: 100vh;
-            position: relative;
-            scroll-snap-align: start;
-            margin-bottom: 200px; /* Добавлен отступ между видео */
+            overflow: hidden;
         }
         
-        .video-container:last-child {
-            margin-bottom: 0; /* Убираем отступ у последнего элемента */
-        }
-        
-        .video-poster {
-            position: absolute;
-            width: 100%;
+        .main-player {
+            flex: 1;
             height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            cursor: pointer;
+            position: relative;
+            background: #000;
         }
         
-        .video-iframe {
-            position: absolute;
+        #ytplayer {
             width: 100%;
             height: 100%;
             border: none;
-            z-index: 2;
-            opacity: 0;
-            transition: opacity 0.5s ease;
         }
         
-        .video-iframe.active {
-            opacity: 1;
+        .thumbnails-column {
+            width: 300px;
+            height: 100%;
+            overflow-y: auto;
+            background: #222;
+            padding: 10px;
+            box-sizing: border-box;
         }
         
-        .video-caption {
+        .thumbnail {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+        
+        .thumbnail.active {
+            border: 3px solid #ff0000;
+            box-shadow: 0 0 20px rgba(255,0,0,0.5);
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .thumbnail-number {
             position: absolute;
-            bottom: 60px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 18px;
-            z-index: 3;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
         }
         
-        .loading-spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            z-index: 4;
-            display: none;
+        /* Скрываем scrollbar для Chrome/Safari */
+        .thumbnails-column::-webkit-scrollbar {
+            width: 8px;
         }
         
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+        .thumbnails-column::-webkit-scrollbar-track {
+            background: #333;
+        }
+        
+        .thumbnails-column::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 4px;
+        }
+        
+        /* Скрываем scrollbar для Firefox */
+        .thumbnails-column {
+            scrollbar-width: thin;
+            scrollbar-color: #666 #333;
         }
     </style>
 </head>
 <body>
-    <div id="video-gallery">
-        <!-- Видео будут добавлены через JS -->
+    <div class="main-player">
+        <iframe id="ytplayer"
+                src="https://www.youtube.com/embed/RXPtgecmBeU?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+    </div>
+    
+    <div class="thumbnails-column" id="thumbnails-container">
+        <!-- Миниатюры будут добавлены через JS -->
     </div>
 
     <script>
         // Конфигурация
-        const config = {
-            videoId: 'XfxyGbh5dmI',
-            videoCount: 20,
-            posterQuality: 'maxresdefault',
-            defaultQuality: 'hd1080',
-            playerParams: 'autoplay=1&mute=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1'
-        };
+        const videos = [
+            { id: 'RXPtgecmBeU', title: 'Video 1' },
+            { id: 'w0-ge_ARniY', title: 'Video 2' }
+        ];
         
-        // Состояние
-        const state = {
-            players: {},
-            activeVideo: null,
-            scrollDebounce: null
-        };
+        const totalThumbnails = 20;
+        let player;
+        let currentVideoIndex = 0;
         
         // Инициализация
         function init() {
-            createVideoElements();
+            createThumbnails();
             loadYouTubeAPI();
-            setupScrollHandler();
         }
         
-        // Создание элементов видео
-        function createVideoElements() {
-            const gallery = document.getElementById('video-gallery');
+        // Создание миниатюр
+        function createThumbnails() {
+            const container = document.getElementById('thumbnails-container');
             
-            for (let i = 0; i < config.videoCount; i++) {
-                const container = document.createElement('div');
-                container.className = 'video-container';
-                container.dataset.index = i;
+            for (let i = 0; i < totalThumbnails; i++) {
+                const videoIndex = i % videos.length;
+                const video = videos[videoIndex];
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                if (i === 0) thumbnail.classList.add('active');
                 
-                container.innerHTML = `
-                    <img class="video-poster" 
-                         src="https://img.youtube.com/vi/${config.videoId}/${config.posterQuality}.jpg" 
-                         alt="Video ${i+1}">
-                    <div class="loading-spinner"></div>
-                    <div class="video-caption">Video ${i+1}</div>
-                    <iframe class="video-iframe"
-                            data-src="https://www.youtube.com/embed/${config.videoId}?${config.playerParams}"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen></iframe>
+                thumbnail.innerHTML = `
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                    <div class="thumbnail-number">${i+1}</div>
                 `;
                 
-                gallery.appendChild(container);
-                
-                // Обработчик клика по постеру
-                container.querySelector('.video-poster').addEventListener('click', () => {
-                    setActiveVideo(i);
+                thumbnail.addEventListener('click', () => {
+                    selectVideo(i, video.id);
                 });
+                
+                container.appendChild(thumbnail);
+            }
+        }
+        
+        // Выбор видео
+        function selectVideo(index, videoId) {
+            if (currentVideoIndex === index) return;
+            
+            // Удаляем активный класс у всех миниатюр
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // Добавляем активный класс выбранной миниатюре
+            const thumbs = document.querySelectorAll('.thumbnail');
+            thumbs[index].classList.add('active');
+            
+            // Прокручиваем к выбранной миниатюре
+            thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Меняем видео
+            if (player) {
+                player.loadVideoById(videoId);
+                currentVideoIndex = index;
+            } else {
+                // Если API еще не загрузилось, меняем src iframe напрямую
+                document.getElementById('ytplayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
+                currentVideoIndex = index;
             }
         }
         
@@ -152,109 +185,37 @@
                 const firstScriptTag = document.getElementsByTagName('script')[0];
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
                 
-                window.onYouTubeIframeAPIReady = initPlayers;
+                window.onYouTubeIframeAPIReady = initPlayer;
             } else {
-                initPlayers();
+                initPlayer();
             }
         }
         
-        // Инициализация плееров
-        function initPlayers() {
-            document.querySelectorAll('.video-iframe').forEach((iframe, index) => {
-                if (iframe.dataset.src) {
-                    iframe.src = iframe.dataset.src;
+        // Инициализация плеера
+        function initPlayer() {
+            player = new YT.Player('ytplayer', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
-                
-                state.players[index] = new YT.Player(iframe, {
-                    events: {
-                        'onReady': (e) => onPlayerReady(e, index),
-                        'onStateChange': (e) => onPlayerStateChange(e, index),
-                        'onPlaybackQualityChange': (e) => {
-                            if (e.data !== config.defaultQuality) {
-                                e.target.setPlaybackQuality(config.defaultQuality);
-                            }
-                        }
-                    }
-                });
             });
         }
         
         // Обработчик готовности плеера
-        function onPlayerReady(event, index) {
+        function onPlayerReady(event) {
             // Устанавливаем качество по умолчанию
-            event.target.setPlaybackQuality(config.defaultQuality);
-            
-            // Если это активное видео, запускаем воспроизведение
-            if (state.activeVideo === index) {
-                event.target.playVideo();
-            }
+            event.target.setPlaybackQuality('hd1080');
+            event.target.playVideo();
         }
         
         // Обработчик изменения состояния
-        function onPlayerStateChange(event, index) {
-            // Бесконечное повторение видео
+        function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
-                event.target.seekTo(0);
-                event.target.playVideo();
+                // Автопереход к следующему видео при окончании
+                const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
+                const videoId = videos[nextIndex % videos.length].id;
+                selectVideo(nextIndex, videoId);
             }
-            
-            // При воспроизведении проверяем качество
-            if (event.data === YT.PlayerState.PLAYING) {
-                event.target.setPlaybackQuality(config.defaultQuality);
-            }
-        }
-        
-        // Установка активного видео
-        function setActiveVideo(index) {
-            if (state.activeVideo === index) return;
-            
-            // Пауза предыдущего видео
-            if (state.activeVideo !== null && state.players[state.activeVideo]) {
-                const prevIframe = document.querySelector(`.video-container[data-index="${state.activeVideo}"] .video-iframe`);
-                prevIframe.classList.remove('active');
-                state.players[state.activeVideo].pauseVideo();
-            }
-            
-            // Запуск нового видео
-            state.activeVideo = index;
-            const currentIframe = document.querySelector(`.video-container[data-index="${index}"] .video-iframe`);
-            currentIframe.classList.add('active');
-            
-            if (state.players[index]) {
-                state.players[index].playVideo();
-                state.players[index].setPlaybackQuality(config.defaultQuality);
-            }
-        }
-        
-        // Определение центрального видео
-        function checkActiveVideo() {
-            const containers = document.querySelectorAll('.video-container');
-            const viewportCenter = window.innerHeight / 2;
-            
-            containers.forEach(container => {
-                const rect = container.getBoundingClientRect();
-                const containerCenter = rect.top + rect.height / 2;
-                
-                // Если центр контейнера близок к центру экрана
-                if (Math.abs(viewportCenter - containerCenter) < 100) {
-                    const index = parseInt(container.dataset.index);
-                    if (state.activeVideo !== index) {
-                        setActiveVideo(index);
-                    }
-                    return;
-                }
-            });
-        }
-        
-        // Обработчик скролла с дебаунсом
-        function setupScrollHandler() {
-            window.addEventListener('scroll', () => {
-                clearTimeout(state.scrollDebounce);
-                state.scrollDebounce = setTimeout(checkActiveVideo, 100);
-            });
-            
-            // Проверка при загрузке
-            setTimeout(checkActiveVideo, 500);
         }
         
         // Запуск приложения
