@@ -98,8 +98,20 @@
 </head>
 <body>
     <div class="main-player">
+        <div id="text-content">
+            <h2>Информационная страница</h2>
+            <p>Это текстовая страница, которая заменяет видео для миниатюры 0.</p>
+            <p>Здесь вы можете разместить любую текстовую информацию, инструкции или описание вашего контента.</p>
+            <p>Пример текста:</p>
+            <ul>
+                <li>Описание проекта</li>
+                <li>Инструкции по использованию</li>
+                <li>Контакты для связи</li>
+                <li>Дополнительные материалы</li>
+            </ul>
+            <p>Вы можете редактировать этот текст прямо в HTML-коде или динамически загружать его через JavaScript.</p>
+        </div>
         <iframe id="ytplayer"
-                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1"
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
@@ -109,6 +121,10 @@
         <!-- Миниатюры будут добавлены через JS -->
     </div>
 
+
+
+
+    
     <script>
         // Конфигурация
         const videos = [
@@ -252,3 +268,4 @@
     </script>
 </body>
 </html>
+
