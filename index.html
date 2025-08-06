@@ -29,6 +29,19 @@
             border: none;
         }
         
+        #start-screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+        }
+        
         .thumbnails-column {
             width: 300px;
             height: 100%;
@@ -109,8 +122,8 @@
 </head>
 <body>
     <div class="main-player">
-        <div id="start-screen" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;color:#fff;font-size:24px;text-align:center;padding:20px;">
-            Добро пожаловать! Начало через: <span id="countdown">60</span> сек.
+        <div id="start-screen">
+            Добро пожаловать!<br>Выберите видео из списка справа
         </div>
         <iframe id="ytplayer"
                 style="display:none;"
@@ -161,14 +174,15 @@
         
         const totalThumbnails = 31;
         let player;
-        let currentVideoIndex = -1; // Начинаем с -1 для текстовой миниатюры
-        let countdownInterval;
+        let currentVideoIndex = -1; // -1 означает текстовый экран
         
         // Инициализация
         function init() {
             createThumbnails();
-            startCountdown();
             loadYouTubeAPI();
+            
+            // По умолчанию активна текстовая миниатюра 0
+            document.querySelector('.thumbnail').classList.add('active');
         }
         
         // Создание миниатюр
@@ -177,11 +191,16 @@
             
             // Добавляем текстовую миниатюру 0
             const textThumbnail = document.createElement('div');
-            textThumbnail.className = 'thumbnail text-thumbnail active';
+            textThumbnail.className = 'thumbnail text-thumbnail';
             textThumbnail.innerHTML = `
-                <div>Добро пожаловать!<br>Выбор видео начнется через 1 минуту</div>
+                <div>Добро пожаловать!<br>Выберите видео</div>
                 <div class="thumbnail-number">0</div>
             `;
+            
+            textThumbnail.addEventListener('click', () => {
+                selectTextScreen();
+            });
+            
             container.appendChild(textThumbnail);
             
             // Добавляем остальные миниатюры
@@ -203,22 +222,28 @@
             }
         }
         
-        // Обратный отсчет для стартового экрана
-        function startCountdown() {
-            let seconds = 60;
-            const countdownElement = document.getElementById('countdown');
+        // Выбор текстового экрана
+        function selectTextScreen() {
+            if (currentVideoIndex === -1) return;
             
-            countdownInterval = setInterval(() => {
-                seconds--;
-                countdownElement.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById('start-screen').style.display = 'none';
-                    document.getElementById('ytplayer').style.display = 'block';
-                    selectVideo(0, videos[0].id); // Переключаем на первое видео
-                }
-            }, 1000);
+            // Удаляем активный класс у всех миниатюр
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // Добавляем активный класс текстовой миниатюре
+            document.querySelectorAll('.thumbnail')[0].classList.add('active');
+            
+            // Показываем текстовый экран
+            document.getElementById('start-screen').style.display = 'flex';
+            document.getElementById('ytplayer').style.display = 'none';
+            
+            // Останавливаем текущее видео
+            if (player && currentVideoIndex >= 0) {
+                player.pauseVideo();
+            }
+            
+            currentVideoIndex = -1;
         }
         
         // Выбор видео
@@ -236,6 +261,10 @@
             
             // Прокручиваем к выбранной миниатюре
             thumbs[index + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Показываем плеер и скрываем текстовый экран
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('ytplayer').style.display = 'block';
             
             // Меняем видео
             if (player) {
@@ -281,7 +310,7 @@
         // Обработчик изменения состояния
         function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED && currentVideoIndex >= 0) {
-                // Автопереход к следующему видео при окончании (кроме текстовой миниатюры)
+                // Автопереход к следующему видео при окончании (кроме текстового экрана)
                 const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
                 const videoId = videos[nextIndex].id;
                 selectVideo(nextIndex, videoId);
