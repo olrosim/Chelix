@@ -29,6 +29,19 @@
             border: none;
         }
         
+        #text-content {
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: none;
+            background: #000;
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
         .thumbnails-column {
             width: 300px;
             height: 100%;
@@ -75,6 +88,16 @@
             font-weight: bold;
         }
         
+        .text-thumbnail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-size: 16px;
+            padding: 15px;
+        }
+
         /* Скрываем scrollbar для Chrome/Safari */
         .thumbnails-column::-webkit-scrollbar {
             width: 8px;
@@ -121,10 +144,6 @@
         <!-- Миниатюры будут добавлены через JS -->
     </div>
 
-
-
-
-    
     <script>
         // Конфигурация
         const videos = [
@@ -169,18 +188,31 @@
         function init() {
             createThumbnails();
             loadYouTubeAPI();
+            // По умолчанию показываем текстовый контент для миниатюры 0
+            selectTextContent();
         }
         
         // Создание миниатюр
         function createThumbnails() {
             const container = document.getElementById('thumbnails-container');
             
+            // Добавляем текстовую миниатюру 0
+            const textThumbnail = document.createElement('div');
+            textThumbnail.className = 'thumbnail text-thumbnail active';
+            textThumbnail.innerHTML = `
+                <div>Текстовая информация</div>
+                <div class="thumbnail-number">0</div>
+            `;
+            textThumbnail.addEventListener('click', () => {
+                selectTextContent();
+            });
+            container.appendChild(textThumbnail);
+            
+            // Добавляем остальные миниатюры (видео)
             for (let i = 0; i < totalThumbnails; i++) {
-                const videoIndex = i % videos.length;
-                const video = videos[videoIndex];
+                const video = videos[i];
                 const thumbnail = document.createElement('div');
                 thumbnail.className = 'thumbnail';
-                if (i === 0) thumbnail.classList.add('active');
                 
                 thumbnail.innerHTML = `
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
@@ -195,6 +227,28 @@
             }
         }
         
+        // Показ текстового контента
+        function selectTextContent() {
+            // Удаляем активный класс у всех миниатюр
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // Добавляем активный класс текстовой миниатюре
+            document.querySelectorAll('.thumbnail')[0].classList.add('active');
+            
+            // Показываем текстовый контент и скрываем видео
+            document.getElementById('text-content').style.display = 'block';
+            document.getElementById('ytplayer').style.display = 'none';
+            
+            // Останавливаем текущее видео, если оно играет
+            if (player) {
+                player.pauseVideo();
+            }
+            
+            currentVideoIndex = -1; // Специальное значение для текстового контента
+        }
+        
         // Выбор видео
         function selectVideo(index, videoId) {
             if (currentVideoIndex === index) return;
@@ -206,10 +260,14 @@
             
             // Добавляем активный класс выбранной миниатюре
             const thumbs = document.querySelectorAll('.thumbnail');
-            thumbs[index].classList.add('active');
+            thumbs[index + 1].classList.add('active'); // +1 потому что 0-я - текстовая
             
             // Прокручиваем к выбранной миниатюре
-            thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            thumbs[index + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Показываем плеер и скрываем текстовый контент
+            document.getElementById('text-content').style.display = 'none';
+            document.getElementById('ytplayer').style.display = 'block';
             
             // Меняем видео
             if (player) {
@@ -250,15 +308,14 @@
         function onPlayerReady(event) {
             // Устанавливаем качество по умолчанию
             event.target.setPlaybackQuality('hd1080');
-            event.target.playVideo();
         }
         
         // Обработчик изменения состояния
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                // Автопереход к следующему видео при окончании
+            if (event.data === YT.PlayerState.ENDED && currentVideoIndex >= 0) {
+                // Автопереход к следующему видео при окончании (кроме текстового контента)
                 const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
-                const videoId = videos[nextIndex % videos.length].id;
+                const videoId = videos[nextIndex].id;
                 selectVideo(nextIndex, videoId);
             }
         }
@@ -268,4 +325,3 @@
     </script>
 </body>
 </html>
-
