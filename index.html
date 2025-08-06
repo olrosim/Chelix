@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Fullscreen YouTube Players</title>
+    <title>YouTube Video Gallery</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             background: #000;
-            height: 100%;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
+        .intro-text {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .video-wrapper {
+            margin: 0 auto;
+            max-width: 1200px;
         }
         .video-container {
             position: relative;
             width: 100%;
-            height: 100vh;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             overflow: hidden;
-            margin-bottom: 100px; /* Добавляем отступ 100px снизу */
-        }
-        .video-container:last-child {
-            margin-bottom: 0; /* Убираем отступ у последнего видео */
+            margin-bottom: 100px; /* Fixed 100px gap */
         }
         .video-container iframe {
             position: absolute;
@@ -29,28 +37,60 @@
             height: 100%;
             border: none;
         }
-        #second-video {
-            top: calc(100vh + 100px); /* Учитываем отступ для позиционирования */
+        .caption {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .spacer {
+            height: 100px;
         }
     </style>
 </head>
 <body>
-    <!-- Первое видео -->
-    <div class="video-container">
-        <iframe id="ytplayer1" 
-                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen></iframe>
+    <!-- Intro text -->
+    <div class="intro-text">
+        <p>The future of digital art is here. These groundbreaking videos showcase innovative techniques that are transforming the creative industry. Artists worldwide are adopting these methods to push boundaries and explore new visual languages.</p>
+        <p>From generative algorithms to neural network rendering, the tools available today allow for unprecedented artistic expression. The following examples demonstrate how technology and creativity merge to produce stunning results.</p>
+        <p>Watch these videos in full screen to appreciate the intricate details. Each piece represents hundreds of hours of work and experimentation with cutting-edge software solutions.</p>
+        <p>The first video explores fractal-based animation techniques, while the second demonstrates AI-assisted character design. Both are remarkable examples of modern digital artistry.</p>
+        <p>These works challenge traditional notions of art creation, blending mathematical precision with organic creativity. The results speak for themselves - a new era of visual storytelling has arrived.</p>
+        <p>Notice how each frame maintains perfect composition despite the complex transformations occurring. This level of control was unimaginable just a decade ago.</p>
+        <p>The artists behind these pieces have developed custom workflows that leverage the latest GPU rendering capabilities. Their techniques are revolutionizing the field.</p>
+        <p>What makes these works particularly impressive is their seamless integration of multiple disciplines - 3D modeling, particle systems, and procedural generation all working in harmony.</p>
+        <p>As you watch, consider how these approaches might influence your own creative process. The potential applications extend far beyond what we see here today.</p>
+        <p>This collection represents just the beginning of what's possible when artists fully embrace the digital medium's potential. The future looks bright indeed.</p>
     </div>
 
-    <!-- Второе видео -->
-    <div class="video-container" id="second-video">
-        <iframe id="ytplayer2" 
-                src="https://www.youtube.com/embed/MW3tpuubqqU?autoplay=1&mute=1&loop=1&playlist=MW3tpuubqqU&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen></iframe>
+    <!-- Spacer before first video -->
+    <div class="spacer"></div>
+
+    <!-- First video -->
+    <div class="video-wrapper">
+        <div class="video-container">
+            <iframe id="ytplayer1" 
+                    src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+        <div class="caption">Fractal Dreamscapes - Generative Art Exploration (2023)</div>
+    </div>
+
+    <!-- Spacer between videos -->
+    <div class="spacer"></div>
+
+    <!-- Second video -->
+    <div class="video-wrapper">
+        <div class="video-container">
+            <iframe id="ytplayer2" 
+                    src="https://www.youtube.com/embed/MW3tpuubqqU?autoplay=1&mute=1&loop=1&playlist=MW3tpuubqqU&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+        <div class="caption">Neural Character Design - AI Assisted Creation Process</div>
     </div>
 
     <script>
@@ -100,19 +140,6 @@
             if (event.data === YT.PlayerState.ENDED) {
                 player2.seekTo(0);
                 player2.playVideo();
-            }
-        }
-
-        // Fullscreen handling
-        function requestFullScreen(element) {
-            if (element.requestFullscreen) {
-                element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-            } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
             }
         }
     </script>
