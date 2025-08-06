@@ -46,6 +46,7 @@
             object-fit: cover;
             transition: opacity 0.5s ease;
             z-index: 1;
+            cursor: pointer;
         }
         
         .video-iframe {
@@ -64,6 +65,7 @@
         
         .video-item.active .video-poster {
             opacity: 0;
+            pointer-events: none;
         }
         
         .video-caption {
@@ -102,16 +104,6 @@
         @keyframes spin {
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
-        
-        /* Анимация появления */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .video-item {
-            animation: fadeIn 0.8s ease forwards;
-        }
     </style>
 </head>
 <body>
@@ -143,6 +135,19 @@
             initIntersectionObserver();
             preloadFirstVideo();
             setupEventListeners();
+            loadYouTubeAPI();
+        }
+        
+        // Загрузка YouTube API
+        function loadYouTubeAPI() {
+            if (!window.YT) {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
+                window.onYouTubeIframeAPIReady = initAllPlayers;
+            }
         }
         
         // Создаем элементы видео
@@ -161,7 +166,7 @@
                     <div class="loading-spinner"></div>
                     <div class="video-caption">Video ${i + 1}</div>
                     <iframe class="video-iframe"
-                            data-src="https://www.youtube.com/embed/${config.videoId}?enablejsapi=1&autoplay=${config.autoplay ? 1 : 0}&mute=${config.mute ? 1 : 0}&playsinline=1"
+                            data-src="https://www.youtube.com/embed/${config.videoId}?enablejsapi=1&autoplay=0&mute=${config.mute ? 1 : 0}&playsinline=1"
                             frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen></iframe>
@@ -176,17 +181,16 @@
             state.observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const index = parseInt(entry.target.dataset.index);
-                    const isActive = entry.isIntersected || entry.intersectionRatio > 0.7;
                     
-                    if (isActive) {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.7) {
                         setActiveVideo(index);
                         loadVideoPlayer(index);
-                    } else {
+                    } else if (state.activeIndex === index) {
                         pauseVideo(index);
                     }
                 });
             }, {
-                threshold: [0, 0.5, 0.7, 1],
+                threshold: 0.7,
                 rootMargin: `${window.innerHeight * config.lazyLoadOffset}px 0px`
             });
             
@@ -213,11 +217,15 @@
         
         // Загрузка плеера
         function loadVideoPlayer(index) {
-            if (state.players[index]) return;
-            
             const item = document.querySelector(`.video-item[data-index="${index}"]`);
             const iframe = item?.querySelector('.video-iframe');
             if (!iframe) return;
+            
+            // Если плеер уже инициализирован, просто запускаем видео
+            if (state.players[index]) {
+                state.players[index].playVideo();
+                return;
+            }
             
             item.classList.add('loading');
             
@@ -226,15 +234,8 @@
                 iframe.src = iframe.dataset.src;
             }
             
-            // Инициализация YouTube API
-            if (!window.YT) {
-                const tag = document.createElement('script');
-                tag.src = "https://www.youtube.com/iframe_api";
-                const firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-                
-                window.onYouTubeIframeAPIReady = () => initAllPlayers();
-            } else if (window.YT.loaded) {
+            // Инициализация YouTube Player
+            if (window.YT) {
                 initPlayer(index);
             }
         }
@@ -297,6 +298,16 @@
         
         // Настройка обработчиков событий
         function setupEventListeners() {
+            // Клик по постеру для ручного запуска
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('video-poster')) {
+                    const item = e.target.closest('.video-item');
+                    const index = parseInt(item.dataset.index);
+                    setActiveVideo(index);
+                    loadVideoPlayer(index);
+                }
+            });
+            
             // Оптимизация для тач-устройств
             let touchStartY = 0;
             let isScrolling = false;
@@ -338,7 +349,7 @@
             if (nextItem) {
                 nextItem.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'center'
+                    block: 'nearest'
                 });
             }
         }
