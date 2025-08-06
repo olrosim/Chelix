@@ -3,309 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optimized Video Gallery</title>
+    <title>Apple Music Style Video Gallery</title>
     <style>
-        body, html {
+        :root {
+            --primary-bg: #000;
+            --text-color: #fff;
+            --caption-color: rgba(255,255,255,0.6);
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            background: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            line-height: 1.5;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-color);
             overflow-x: hidden;
             scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
         }
-        .intro-text {
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            height: 100vh;
+        
+        .video-grid {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            scroll-snap-align: start;
+            gap: 2px;
         }
-        .video-section {
-            width: 100%;
-            height: 100vh;
+        
+        .video-item {
             position: relative;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
             scroll-snap-align: start;
         }
-        .video-container {
+        
+        .video-poster {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease;
+            z-index: 1;
         }
-        .video-container iframe {
+        
+        .video-iframe {
+            position: absolute;
             width: 100%;
             height: 100%;
             border: none;
-            background: #000;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 2;
         }
-        .caption {
+        
+        .video-item.active .video-iframe {
+            opacity: 1;
+        }
+        
+        .video-item.active .video-poster {
+            opacity: 0;
+        }
+        
+        .video-caption {
             position: absolute;
-            bottom: 20px;
+            bottom: 80px;
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 14px;
-            color: #ccc;
-            z-index: 10;
-            pointer-events: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--caption-color);
+            padding: 0 20px;
+            z-index: 3;
         }
-        .spacer {
-            height: 100px;
-            background: #000;
-            scroll-snap-align: start;
+        
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .video-item.loading .loading-spinner {
+            opacity: 1;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Анимация появления */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .video-item {
+            animation: fadeIn 0.8s ease forwards;
         }
     </style>
 </head>
 <body>
-    <!-- Intro text section -->
-    <section class="intro-text">
-        <p>The future of digital art is here. These groundbreaking videos showcase innovative techniques that are transforming the creative industry. Artists worldwide are adopting these methods to push boundaries and explore new visual languages.</p>
-        <!-- Остальной текст -->
-    </section>
-
-    <div class="spacer"></div>
-
-    <!-- Видео секции (все 31 видео) -->
-    <section class="video-section">
-        <div class="video-container">
-            <iframe id="ytplayer1" data-src="https://www.youtube.com/embed/0AimnC3n1lY?enablejsapi=1" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="caption">Fractal Dreamscapes - Generative Art Exploration (2023)</div>
-    </section>
-
-    <div class="spacer"></div>
-
-    <section class="video-section">
-        <div class="video-container">
-            <iframe id="ytplayer2" data-src="https://www.youtube.com/embed/MW3tpuubqqU?enablejsapi=1" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="caption">Neural Character Design - AI Assisted Creation Process</div>
-    </section>
-
-    <!-- Остальные видео-секции с ytplayer3 до ytplayer31 -->
-    <!-- ... -->
+    <div class="video-grid" id="videoContainer">
+        <!-- Видео элементы будут добавлены через JS -->
+    </div>
 
     <script>
-        // Конфигурация YouTube
-        const youtubeConfig = {
-            autoplay: 1,
-            mute: 1,
-            loop: 1,
-            controls: 0,
-            rel: 0,
-            modestbranding: 1,
-            fs: 0,
-            disablekb: 1,
-            iv_load_policy: 3,
-            showinfo: 0
+        // Конфигурация
+        const config = {
+            videoId: 'XfxyGbh5dmI', // YouTube ID
+            videoCount: 20, // Количество видео
+            posterQuality: 'maxresdefault', // Качество превью
+            autoplay: true,
+            mute: true,
+            lazyLoadOffset: 1 // Загружать видео за 1 экран до/после текущего
         };
-
-        // Состояние приложения
-        const appState = {
+        
+        // Состояние
+        const state = {
+            activeIndex: -1,
             players: {},
-            activePlayer: null,
-            isScrolling: false,
-            lastScrollTime: 0
+            observer: null
         };
-
-        // Инициализация YouTube API
-        function initYouTubeAPI() {
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-
-        // Создание URL с параметрами
-        function getYouTubeUrl(videoId) {
-            const params = new URLSearchParams();
-            Object.entries(youtubeConfig).forEach(([key, value]) => {
-                params.set(key, value);
-            });
-            params.set('playlist', videoId); // Для loop
-            return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
-        }
-
-        // Инициализация Intersection Observer
-        function initIntersectionObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                const now = Date.now();
-                
-                // Защита от частых срабатываний
-                if (now - appState.lastScrollTime < 100) return;
-                appState.lastScrollTime = now;
-
-                entries.forEach(entry => {
-                    const iframe = entry.target.querySelector('iframe');
-                    if (!iframe) return;
-
-                    const player = appState.players[iframe.id];
-                    if (!player) return;
-
-                    if (entry.isIntersecting) {
-                        // Видео в зоне видимости
-                        if (appState.activePlayer && appState.activePlayer !== player) {
-                            appState.activePlayer.pauseVideo();
-                            appState.activePlayer.setPlaybackQuality('default');
-                        }
-                        
-                        player.playVideo();
-                        player.setPlaybackQuality('hd1080');
-                        appState.activePlayer = player;
-                    } else {
-                        // Видео вне зоны видимости
-                        if (appState.activePlayer === player) {
-                            player.pauseVideo();
-                            player.setPlaybackQuality('default');
-                            appState.activePlayer = null;
-                        }
-                    }
-                });
-            }, { 
-                threshold: 0.7,
-                rootMargin: "0px 0px -100px 0px" 
-            });
-
-            document.querySelectorAll('.video-section').forEach(section => {
-                observer.observe(section);
-            });
-        }
-
-        // Инициализация всех плееров
-        function onYouTubeIframeAPIReady() {
-            document.querySelectorAll('.video-section').forEach((section, index) => {
-                const iframe = section.querySelector('iframe');
-                if (!iframe) return;
-
-                const videoId = iframe.dataset.src.split('/embed/')[1].split('?')[0];
-                iframe.src = getYouTubeUrl(videoId);
-
-                appState.players[iframe.id] = new YT.Player(iframe.id, {
-                    events: {
-                        'onReady': (e) => onPlayerReady(e, iframe.id),
-                        'onStateChange': onPlayerStateChange
-                    }
-                });
-            });
-
+        
+        // Инициализация
+        function init() {
+            createVideoItems();
             initIntersectionObserver();
-            setupSmoothScrolling();
+            preloadFirstVideo();
+            setupEventListeners();
         }
-
-        // Обработчик готовности плеера
-        function onPlayerReady(event, playerId) {
-            event.target.setPlaybackQuality('hd1080');
-            event.target.a.style.filter = 'brightness(1)';
+        
+        // Создаем элементы видео
+        function createVideoItems() {
+            const container = document.getElementById('videoContainer');
             
-            // Авто-полноэкран для первого видео
-            if (playerId === 'ytplayer1') {
-                event.target.playVideo();
-                appState.activePlayer = event.target;
-                enterFullscreen(event.target.a.closest('.video-section'));
+            for (let i = 0; i < config.videoCount; i++) {
+                const videoItem = document.createElement('div');
+                videoItem.className = 'video-item';
+                videoItem.dataset.index = i;
+                
+                videoItem.innerHTML = `
+                    <img class="video-poster" 
+                         src="https://img.youtube.com/vi/${config.videoId}/${config.posterQuality}.jpg"
+                         alt="Video poster ${i + 1}">
+                    <div class="loading-spinner"></div>
+                    <div class="video-caption">Video ${i + 1}</div>
+                    <iframe class="video-iframe"
+                            data-src="https://www.youtube.com/embed/${config.videoId}?enablejsapi=1&autoplay=${config.autoplay ? 1 : 0}&mute=${config.mute ? 1 : 0}&playsinline=1"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                `;
+                
+                container.appendChild(videoItem);
             }
         }
-
+        
+        // Инициализация Intersection Observer
+        function initIntersectionObserver() {
+            state.observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const index = parseInt(entry.target.dataset.index);
+                    const isActive = entry.isIntersected || entry.intersectionRatio > 0.7;
+                    
+                    if (isActive) {
+                        setActiveVideo(index);
+                        loadVideoPlayer(index);
+                    } else {
+                        pauseVideo(index);
+                    }
+                });
+            }, {
+                threshold: [0, 0.5, 0.7, 1],
+                rootMargin: `${window.innerHeight * config.lazyLoadOffset}px 0px`
+            });
+            
+            document.querySelectorAll('.video-item').forEach(item => {
+                state.observer.observe(item);
+            });
+        }
+        
+        // Установка активного видео
+        function setActiveVideo(index) {
+            if (state.activeIndex === index) return;
+            
+            // Снимаем активный класс с предыдущего видео
+            if (state.activeIndex >= 0) {
+                const prevItem = document.querySelector(`.video-item[data-index="${state.activeIndex}"]`);
+                prevItem?.classList.remove('active');
+            }
+            
+            // Устанавливаем новый активный элемент
+            state.activeIndex = index;
+            const currentItem = document.querySelector(`.video-item[data-index="${index}"]`);
+            currentItem?.classList.add('active');
+        }
+        
+        // Загрузка плеера
+        function loadVideoPlayer(index) {
+            if (state.players[index]) return;
+            
+            const item = document.querySelector(`.video-item[data-index="${index}"]`);
+            const iframe = item?.querySelector('.video-iframe');
+            if (!iframe) return;
+            
+            item.classList.add('loading');
+            
+            // Загружаем iframe (ленивая загрузка)
+            if (!iframe.src && iframe.dataset.src) {
+                iframe.src = iframe.dataset.src;
+            }
+            
+            // Инициализация YouTube API
+            if (!window.YT) {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
+                window.onYouTubeIframeAPIReady = () => initAllPlayers();
+            } else if (window.YT.loaded) {
+                initPlayer(index);
+            }
+        }
+        
+        // Инициализация всех плееров
+        function initAllPlayers() {
+            document.querySelectorAll('.video-item').forEach((item, index) => {
+                initPlayer(index);
+            });
+        }
+        
+        // Инициализация конкретного плеера
+        function initPlayer(index) {
+            if (state.players[index]) return;
+            
+            const iframe = document.querySelector(`.video-item[data-index="${index}"] .video-iframe`);
+            if (!iframe) return;
+            
+            state.players[index] = new YT.Player(iframe, {
+                events: {
+                    'onReady': (e) => onPlayerReady(e, index),
+                    'onStateChange': (e) => onPlayerStateChange(e, index)
+                }
+            });
+        }
+        
+        // Обработчик готовности плеера
+        function onPlayerReady(event, index) {
+            const item = document.querySelector(`.video-item[data-index="${index}"]`);
+            item?.classList.remove('loading');
+            
+            if (index === state.activeIndex) {
+                event.target.playVideo();
+            }
+        }
+        
         // Обработчик изменения состояния
-        function onPlayerStateChange(event) {
+        function onPlayerStateChange(event, index) {
             if (event.data === YT.PlayerState.ENDED) {
                 event.target.seekTo(0);
                 event.target.playVideo();
             }
         }
-
-        // Функция полноэкранного режима
-        function enterFullscreen(element) {
-            if (element.requestFullscreen) {
-                element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-                element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) {
-                element.webkitRequestFullscreen();
-            } else if (element.msRequestFullscreen) {
-                element.msRequestFullscreen();
+        
+        // Пауза видео
+        function pauseVideo(index) {
+            if (!state.players[index]) return;
+            
+            try {
+                state.players[index].pauseVideo();
+            } catch (e) {
+                console.warn('Could not pause video:', e);
             }
         }
-
-        // Настройка плавной прокрутки
-        function setupSmoothScrolling() {
-            const sections = document.querySelectorAll('.video-section, .intro-text');
+        
+        // Предзагрузка первого видео
+        function preloadFirstVideo() {
+            loadVideoPlayer(0);
+        }
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Оптимизация для тач-устройств
+            let touchStartY = 0;
             let isScrolling = false;
             
-            // Обработчик колеса мыши
-            window.addEventListener('wheel', (e) => {
-                if (isScrolling) {
-                    e.preventDefault();
-                    return;
-                }
-
-                if (Math.abs(e.deltaY) > 50) {
-                    e.preventDefault();
-                    const direction = e.deltaY > 0 ? 1 : -1;
-                    scrollToNextSection(direction);
-                }
-            }, { passive: false });
-
-            // Обработчик касаний для мобильных
-            let touchStartY = 0;
             document.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
             }, { passive: true });
-
+            
             document.addEventListener('touchend', (e) => {
                 const touchEndY = e.changedTouches[0].clientY;
                 const diff = touchStartY - touchEndY;
                 
                 if (Math.abs(diff) > 50 && !isScrolling) {
-                    const direction = diff > 0 ? 1 : -1;
-                    scrollToNextSection(direction);
-                }
-            }, { passive: true });
-
-            // Прокрутка к следующей секции
-            function scrollToNextSection(direction) {
-                if (isScrolling) return;
-                
-                const currentScroll = window.scrollY;
-                let targetSection = null;
-                let minDistance = Infinity;
-
-                sections.forEach(section => {
-                    const distance = Math.abs(section.offsetTop - currentScroll);
-                    if ((direction > 0 && section.offsetTop > currentScroll + 10) || 
-                        (direction < 0 && section.offsetTop < currentScroll - 10)) {
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            targetSection = section;
-                        }
-                    }
-                });
-
-                if (targetSection) {
                     isScrolling = true;
-                    window.scrollTo({
-                        top: targetSection.offsetTop,
-                        behavior: 'smooth'
-                    });
-
+                    const direction = diff > 0 ? 1 : -1;
+                    scrollToNextVideo(direction);
+                    
                     setTimeout(() => {
                         isScrolling = false;
                     }, 800);
                 }
+            }, { passive: true });
+            
+            // Клавиши вверх/вниз
+            document.addEventListener('keydown', (e) => {
+                if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+                    e.preventDefault();
+                    const direction = e.key === 'ArrowDown' ? 1 : -1;
+                    scrollToNextVideo(direction);
+                }
+            });
+        }
+        
+        // Прокрутка к следующему видео
+        function scrollToNextVideo(direction) {
+            const nextIndex = Math.max(0, Math.min(config.videoCount - 1, state.activeIndex + direction));
+            const nextItem = document.querySelector(`.video-item[data-index="${nextIndex}"]`);
+            
+            if (nextItem) {
+                nextItem.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
             }
         }
-
-        // Инициализация при загрузке
-        document.addEventListener('DOMContentLoaded', () => {
-            initYouTubeAPI();
-        });
+        
+        // Запуск приложения
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
