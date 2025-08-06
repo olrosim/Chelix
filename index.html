@@ -14,11 +14,21 @@
             overflow-x: hidden;
         }
         
+        #video-gallery {
+            display: flex;
+            flex-direction: column;
+        }
+        
         .video-container {
             width: 100vw;
             height: 100vh;
             position: relative;
             scroll-snap-align: start;
+            margin-bottom: 200px; /* Добавлен отступ между видео */
+        }
+        
+        .video-container:last-child {
+            margin-bottom: 0; /* Убираем отступ у последнего элемента */
         }
         
         .video-poster {
