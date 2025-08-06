@@ -3,75 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fullscreen YouTube Player</title>
+    <title>Fullscreen Video Gallery</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background: #000;
-            height: 100%;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
         }
-        #video-container {
-            position: fixed;
+        .intro-text {
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .fullscreen-section {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .video-container {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
         }
-        #ytplayer {
+        .video-container iframe {
             width: 100%;
             height: 100%;
+            border: none;
+        }
+        .caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .spacer {
+            height: 100px;
+            background: #000;
         }
     </style>
 </head>
 <body>
-    <div id="video-container">
-        <iframe id="ytplayer" 
-                src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen></iframe>
+    <!-- Intro text section -->
+    <div class="fullscreen-section intro-text">
+        <p>The future of digital art is here. These groundbreaking videos showcase innovative techniques that are transforming the creative industry. Artists worldwide are adopting these methods to push boundaries and explore new visual languages.</p>
+        <p>From generative algorithms to neural network rendering, the tools available today allow for unprecedented artistic expression. The following examples demonstrate how technology and creativity merge to produce stunning results.</p>
+        <p>Watch these videos in full screen to appreciate the intricate details. Each piece represents hundreds of hours of work and experimentation with cutting-edge software solutions.</p>
+        <p>The first video explores fractal-based animation techniques, while the second demonstrates AI-assisted character design. Both are remarkable examples of modern digital artistry.</p>
+        <p>These works challenge traditional notions of art creation, blending mathematical precision with organic creativity. The results speak for themselves - a new era of visual storytelling has arrived.</p>
+        <p>Notice how each frame maintains perfect composition despite the complex transformations occurring. This level of control was unimaginable just a decade ago.</p>
+        <p>The artists behind these pieces have developed custom workflows that leverage the latest GPU rendering capabilities. Their techniques are revolutionizing the field.</p>
+        <p>What makes these works particularly impressive is their seamless integration of multiple disciplines - 3D modeling, particle systems, and procedural generation all working in harmony.</p>
+        <p>As you watch, consider how these approaches might influence your own creative process. The potential applications extend far beyond what we see here today.</p>
+        <p>This collection represents just the beginning of what's possible when artists fully embrace the digital medium's potential. The future looks bright indeed.</p>
+    </div>
+
+    <!-- Spacer before first video -->
+    <div class="spacer"></div>
+
+    <!-- First fullscreen video -->
+    <div class="fullscreen-section">
+        <div class="video-container">
+            <iframe id="ytplayer1" 
+                    src="https://www.youtube.com/embed/0AimnC3n1lY?autoplay=1&mute=1&loop=1&playlist=0AimnC3n1lY&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+        <div class="caption">Fractal Dreamscapes - Generative Art Exploration (2023)</div>
+    </div>
+
+    <!-- Spacer between videos -->
+    <div class="spacer"></div>
+
+    <!-- Second fullscreen video -->
+    <div class="fullscreen-section">
+        <div class="video-container">
+            <iframe id="ytplayer2" 
+                    src="https://www.youtube.com/embed/MW3tpuubqqU?autoplay=1&mute=1&loop=1&playlist=MW3tpuubqqU&controls=0&rel=0&modestbranding=1&enablejsapi=1&fs=0&disablekb=1&iv_load_policy=3&showinfo=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+        <div class="caption">Neural Character Design - AI Assisted Creation Process</div>
     </div>
 
     <script>
-        // YouTube API for quality control
+        // YouTube API for both players
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        var player;
+        var player1, player2;
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('ytplayer', {
+            player1 = new YT.Player('ytplayer1', {
                 events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onReady': onPlayer1Ready,
+                    'onStateChange': onPlayer1StateChange
+                }
+            });
+            
+            player2 = new YT.Player('ytplayer2', {
+                events: {
+                    'onReady': onPlayer2Ready,
+                    'onStateChange': onPlayer2StateChange
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            // Set quality to highest available
+        function onPlayer1Ready(event) {
             event.target.setPlaybackQuality('hd1080');
             event.target.playVideo();
-            
-            // Hide YouTube logo and controls completely
-            var iframe = document.getElementById('ytplayer');
-            iframe.style.filter = 'brightness(1)'; // Removes any overlay
+            document.getElementById('ytplayer1').style.filter = 'brightness(1)';
+            enterFullscreen(document.querySelector('.fullscreen-section:nth-of-type(2)'));
         }
 
-        function onPlayerStateChange(event) {
-            // Restart video when ended
+        function onPlayer2Ready(event) {
+            event.target.setPlaybackQuality('hd1080');
+            event.target.playVideo();
+            document.getElementById('ytplayer2').style.filter = 'brightness(1)';
+        }
+
+        function onPlayer1StateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
-                player.seekTo(0);
-                player.playVideo();
+                player1.seekTo(0);
+                player1.playVideo();
             }
         }
 
-        // Force fullscreen (works on most modern browsers)
-        function requestFullScreen() {
-            var element = document.documentElement;
+        function onPlayer2StateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                player2.seekTo(0);
+                player2.playVideo();
+            }
+        }
+
+        // Fullscreen handling
+        function enterFullscreen(element) {
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.mozRequestFullScreen) {
@@ -83,10 +167,42 @@
             }
         }
 
-        // Auto-enter fullscreen when page loads
-        window.onload = function() {
-            requestFullScreen();
-        };
+        // Auto-scroll to sections
+        let currentSection = 0;
+        const sections = document.querySelectorAll('.fullscreen-section');
+        
+        function scrollToSection(index) {
+            currentSection = Math.max(0, Math.min(index, sections.length - 1));
+            sections[currentSection].scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                scrollToSection(currentSection + 1);
+            } else if (e.key === 'ArrowUp') {
+                scrollToSection(currentSection - 1);
+            }
+        });
+
+        // Touch events for mobile
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    scrollToSection(currentSection + 1);
+                } else {
+                    scrollToSection(currentSection - 1);
+                }
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
