@@ -148,7 +148,7 @@
     <script>
         // Конфигурация
         const videos = [
-            { id: '0AimnC3n1lY', title: 'Video 1' },            
+            { id: '0AimnC3n1lY', title: 'Video' },            
             { id: 'MW3tpuubqqU', title: 'Video 2' },                   
             { id: '4psThXW463s', title: 'Video 3' },            
             { id: 'lFlO23GdCrM', title: 'Video 4' },            
@@ -217,7 +217,7 @@
                 
                 thumbnail.innerHTML = `           
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg?v=2" alt="${video.title}">
-                    <div class="thumbnail-number">{video.title}</div>                    
+                    <div class="thumbnail-number">${video.title}</div>                    
                 `;
                 
                 thumbnail.addEventListener('click', () => {
@@ -335,6 +335,7 @@
     </script>
 </body>
 </html>
+
 
 
 
