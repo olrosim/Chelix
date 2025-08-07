@@ -215,9 +215,9 @@
                 const thumbnail = document.createElement('div');
                 thumbnail.className = 'thumbnail';
                 
-                thumbnail.innerHTML = `
-                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
-                    <div class="thumbnail-number">${i+1}</div>
+                thumbnail.innerHTML = `           
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg?v=2" alt="${video.title}">
+                    <div class="thumbnail-number">${i+1}</div>                    
                 `;
                 
                 thumbnail.addEventListener('click', () => {
@@ -335,6 +335,7 @@
     </script>
 </body>
 </html>
+
 
 
 
