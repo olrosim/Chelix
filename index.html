@@ -201,7 +201,7 @@
             textThumb.className = 'thumbnail text-thumbnail active';
             textThumb.innerHTML = `
                 <div>INFO</div>
-                <div class="thumbnail-number">0</div>
+                <div class="thumbnail-number"> </div>
             `;
             textThumb.addEventListener('click', () => {
                 showTextPage(1);
@@ -217,7 +217,7 @@
                 
                 thumbnail.innerHTML = `           
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg?v=2" alt="${video.title}">
-                    <div class="thumbnail-number">${i+1}</div>                    
+                    <div class="thumbnail-number">${video.title}</div>                    
                 `;
                 
                 thumbnail.addEventListener('click', () => {
@@ -335,6 +335,7 @@
     </script>
 </body>
 </html>
+
 
 
 
