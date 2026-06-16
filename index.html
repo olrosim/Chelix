@@ -124,6 +124,42 @@
             scrollbar-width: thin;
             scrollbar-color: #666 #333;
         }
+
+        /* ===== МЕДИА-ЗАПРОСЫ ДЛЯ СМАРТФОНОВ ===== */
+        @media (max-width: 768px) {
+            .thumbnails-column {
+                width: 80px; /* Уменьшенная ширина колонки */
+                padding: 5px;
+            }
+            
+            .thumbnail {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1; /* Квадратные миниатюры */
+                margin-bottom: 8px;
+            }
+            
+            .thumbnail-number {
+                display: none; /* Скрываем номера */
+            }
+            
+            .text-thumbnail {
+                font-size: 10px;
+                padding: 5px;
+                height: auto;
+                aspect-ratio: 1 / 1;
+            }
+            
+            #text-content {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            #text-content h2 {
+                font-size: 14px;
+                margin: 5px 0;
+            }
+        }
     </style>
 </head>
 <body>
