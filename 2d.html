@@ -260,7 +260,7 @@
             });
             container.appendChild(textThumb);
             
-            // 2D миниатюра (1)
+            // 3D миниатюра (1) - теперь ссылка на index.html
             const twoDThumb = document.createElement('div');
             twoDThumb.className = 'thumbnail text-thumbnail';
             twoDThumb.innerHTML = `
@@ -268,7 +268,7 @@
                 <div class="thumbnail-number"> </div>
             `;
             twoDThumb.addEventListener('click', () => {
-                showTextPage(1);
+                window.location.href = 'index.html';
             });
             container.appendChild(twoDThumb);
             
@@ -334,7 +334,7 @@
             
             // Добавляем активный класс выбранной миниатюре
             const thumbs = document.querySelectorAll('.thumbnail');
-            thumbs[index + 2].classList.add('active'); // +2 потому что 0-я - текстовая, 1-я - 2D
+            thumbs[index + 2].classList.add('active'); // +2 потому что 0-я - текстовая, 1-я - 3D
             
             // Прокручиваем к выбранной миниатюре
             thumbs[index + 2].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
