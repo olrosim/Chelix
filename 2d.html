@@ -1,1 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chelix Portfolio</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Calibri, sans-serif;
+            background: #111;
+            color: #bcbbb4;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-player {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background: #000;
+        }
+        
+        #ytplayer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none; /* Сначала скрыт */
+        }
+        
+        #text-content {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background: #000;
+            color: #8d8c87;
+        }
+        
+        .text-page {
+            display: none;
+        }
+        
+        .text-page.active {
+            display: block;
+        }
+        
+        .thumbnails-column {
+            width: 300px;
+            height: 100%;
+            overflow-y: auto;
+            background: #222;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            height: 180px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);   
+        }
+        
+        .thumbnail.active {
+            border: 3px solid #43ff64d9;  
+            box-shadow: 0 0 20px rgba(90, 168, 9, 0.71);
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .thumbnail-number {
+            position: absolute;
+            top: 149px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .text-thumbnail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #000 100%);
+            font-size: 16px;
+            padding: 15px;
+            height: 60px;
+        }
 
+        /* Скрываем scrollbar для Chrome/Safari */
+        .thumbnails-column::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .thumbnails-column::-webkit-scrollbar-track {
+            background: #333;
+        }
+        
+        .thumbnails-column::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 4px;
+        }
+        
+        /* Скрываем scrollbar для Firefox */
+        .thumbnails-column {
+            scrollbar-width: thin;
+            scrollbar-color: #666 #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-player">
+        <div id="text-content">
+            <div class="text-page active" id="page1">
+
+                <h2>Hello,</h2>
+                <h2>My name is Oleg. I'm a 3D artist with experience in creating characters and assets for games and real-time applications. My workflow covers the full cycle — from concept to rigged and textured models ready for Unreal Engine and Unity.</h2>
+                <h2>&nbsp;</h2> 
+                <h2>My skills include:</h2>
+                <h2>- Sculpting in ZBrush</h2>
+                <h2>- Retopology (TopoGun/Blender), UV unwrapping (RizomUV/Blender), and baking (Marmoset, Substance Painter)</h2>
+                <h2>- Texturing in Substance Painter</h2>
+                <h2>- Rigging and skinning in Maya/Blender</h2>
+                <h2>- Animation in Blender</h2>
+                <h2>- Packaging and optimization for Unreal and Unity</h2>
+                <h2>&nbsp;</h2> 
+                <h2>I work with both stylized and realistic styles, focusing on clean topology and efficient asset structure.</h2>
+                <h2>&nbsp;</h2> 
+                <h2>I'm open to remote freelance and full-time positions. If you think my skills could contribute to your project, I'd be glad to share more examples of my work or discuss potential collaboration.</h2>
+                <h2>&nbsp;</h2> 
+                <h2>Best regards,  </h2>
+                <h2>Oleg</h2>               
+                <h2>📧 <a href="mailto:macrofarmkit@gmail.com" style="color: #53ad5f; text-decoration: none;">macrofarmkit@gmail.com</a></h2>
+                <h2>📧 <a href="https://vk.com/adrenalyn_art" target="_blank" style="color: #53ad5f; text-decoration: none;">VK</a></h2>
+                <h2>📧 Twitch in any chat  /w Adrenalyn_art your message </a></h2>                
+                <h2>📱 Telegram: <a href="https://t.me/Chelix_art" style="color: #53ad5f; text-decoration: none;" target="_blank">@Chelix_art</a></h2> 
+                <h2>&nbsp;</h2>
+
+                            
+            </div>
+        </div>
+        <iframe id="ytplayer"
+                src="https://www.youtube.com/embed/0AimnC3n1lY?enablejsapi=1"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+    </div>
+    
+    <div class="thumbnails-column" id="thumbnails-container">
+        <!-- Миниатюры будут добавлены через JS -->
+    </div>
+
+    <script>
+        // Конфигурация
+        const videos = [
+
+
+
+            { id: 'Rw4PbYEgXs0', title: 'Character part (personal)' },            
+            { id: 'QxZ1ObG4-zc', title: 'Character part (personal)' },            
+            { id: 'RyjFIjKKSbo', title: 'Helmet (personal)' },            
+            { id: '4P1uZrHpYjA', title: 'Character part (personal)' },            
+            { id: 'PeG6f6miLTs', title: 'Character part topology' }, 
+            { id: 'X4A0TiWc1aE', title: 'wip (personal)' },  
+            { id: 'Mw5Znx-4X6I', title: 'wip (personal)' },           
+            { id: '0AimnC3n1lY', title: 'Gnome (personal) UE5' },            
+            { id: 'MW3tpuubqqU', title: 'Gnome topology' },                   
+            { id: '4psThXW463s', title: 'Gnome shading, bones' },                 
+            { id: 'lFlO23GdCrM', title: 'House sculpt wip (from concept)' },            
+            { id: 'F6-aOFt3JM8', title: 'Viking (from concept)' },         
+            { id: 'LmtUKBbLbSM', title: 'Toy (personal) UE5' },            
+            { id: 'MWqIDvwZxLk', title: 'Toy highpoly' },  
+            { id: 'RXPtgecmBeU', title: 'wip (from concept)' },      
+            { id: '61hk9rytS44', title: 'Robot (personal)' },  
+
+            { id: 'qZoou1QjJu0', title: 'wip (personal)' },
+            
+            
+            { id: '1WnAjfIpLS8', title: 'Toad (from concept)' },            
+            { id: '-KdRvkjVWMw', title: 'Toad (from concept)' },            
+            { id: 'xBooUcvSWi8', title: 'Toad (from concept)' },  
+            { id: 'XfxyGbh5dmI', title: 'wip (from concept)' },              
+            { id: 'GqpH4pT1V9w', title: 'Character (from concept)' },            
+            { id: 'eJcgfIXJ4ks', title: 'Character topology' },                
+            { id: 'MyiKJtuOGWU', title: 'Welder (from concept)' },   
+            //{ id: 'KzPDm75xZiw', title: 'wip (from concept)' },              
+         
+            { id: 'mEYsRvAUNQ8', title: 'Fan art (from concept)' },            
+            { id: 'Ew5DckGw4UI', title: 'Fan art topology' },  
+            { id: 'HrvfshcBKmk', title: 'Monster (from concept)' },   
+            { id: 'QHr1YhuzNWA', title: 'wip (personal)' },              
+            { id: '5j4rIv4lJys', title: 'Monster (personal)' },  
+            { id: 'w0-ge_ARniY', title: 'wip (personal)' },  
+            { id: 'rYR7oIECmJ0', title: 'skeleton (for UE pack)' },    
+            { id: 'AEOj70iULyo', title: 'UE id mask' },             
+            { id: 'H9qLULCM0O8', title: 'UE pack' }, 
+
+            { id: 'aFeV-YUNWok', title: 'Simple Anim' }, 
+            { id: 'TF52Ws9JaGo', title: 'Simple Anim' },
+            { id: 'alCU9edz1n8', title: 'Simple Anim' },
+            { id: 'sBsoOVKmTns', title: 'Simple Anim' },
+            { id: 'krJhDwKE-Cs', title: 'Simple Anim' },
+            { id: 'ATFR96MxrrI', title: 'Simple Anim' },
+            { id: '301rYV0R-6Y', title: 'Simple Anim' },
+            { id: 'QDWqL_sH-A8', title: 'Simple Anim' },
+            { id: '26b1zEO_xUY', title: 'Simple Anim' },
+
+            
+
+
+
+
+            
+                   
+           
+        ];
+        
+        const totalThumbnails = 42;
+        let player;
+        let currentVideoIndex = -1; // -1 означает текстовый режим
+        
+        // Инициализация
+        function init() {
+            createThumbnails();
+            loadYouTubeAPI();
+            showTextPage(1); // Показываем первую текстовую страницу
+        }
+        
+        // Создание миниатюр
+        function createThumbnails() {
+            const container = document.getElementById('thumbnails-container');
+            
+            // Текстовая миниатюра (0)
+            const textThumb = document.createElement('div');
+            textThumb.className = 'thumbnail text-thumbnail active';
+            textThumb.innerHTML = `
+                <div>I n f o r m a t i o n</div>
+                <div class="thumbnail-number"> </div>
+            `;
+            textThumb.addEventListener('click', () => {
+                showTextPage(1);
+            });
+            container.appendChild(textThumb);
+            
+            // 2D миниатюра (1)
+            const twoDThumb = document.createElement('div');
+            twoDThumb.className = 'thumbnail text-thumbnail';
+            twoDThumb.innerHTML = `
+                <div>3D</div>
+                <div class="thumbnail-number"> </div>
+            `;
+            twoDThumb.addEventListener('click', () => {
+                showTextPage(1);
+            });
+            container.appendChild(twoDThumb);
+            
+            // Видео миниатюры (2-43)
+            for (let i = 0; i < totalThumbnails; i++) {
+                const videoIndex = i % videos.length;
+                const video = videos[videoIndex];
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                
+                thumbnail.innerHTML = `           
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg?v=2" alt="${video.title}">
+                    <div class="thumbnail-number">${video.title}</div>                    
+                `;
+                
+                thumbnail.addEventListener('click', () => {
+                    selectVideo(i, video.id);
+                });
+                
+                container.appendChild(thumbnail);
+            }
+        }
+        
+        // Показать текстовую страницу
+        function showTextPage(pageNum) {
+            // Скрываем видео, показываем текстовый контент
+            document.getElementById('ytplayer').style.display = 'none';
+            document.getElementById('text-content').style.display = 'block';
+            
+            // Скрываем все страницы, показываем нужную
+            document.querySelectorAll('.text-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            
+            // Обновляем активную миниатюру
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            document.querySelectorAll('.thumbnail')[0].classList.add('active');
+            
+            // Останавливаем видео, если оно играло
+            if (player && currentVideoIndex >= 0) {
+                player.pauseVideo();
+            }
+            
+            currentVideoIndex = -1;
+        }
+        
+        // Начать просмотр видео
+        function startVideos() {
+            selectVideo(0, videos[0].id);
+        }
+        
+        // Выбор видео
+        function selectVideo(index, videoId) {
+            if (currentVideoIndex === index) return;
+            
+            // Удаляем активный класс у всех миниатюр
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // Добавляем активный класс выбранной миниатюре
+            const thumbs = document.querySelectorAll('.thumbnail');
+            thumbs[index + 2].classList.add('active'); // +2 потому что 0-я - текстовая, 1-я - 2D
+            
+            // Прокручиваем к выбранной миниатюре
+            thumbs[index + 2].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Показываем плеер и скрываем текстовый контент
+            document.getElementById('text-content').style.display = 'none';
+            document.getElementById('ytplayer').style.display = 'block';
+            
+            // Меняем видео
+            if (player) {
+                player.loadVideoById(videoId);
+                currentVideoIndex = index;
+            } else {
+                // Если API еще не загрузилось, меняем src iframe напрямую
+                document.getElementById('ytplayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
+                currentVideoIndex = index;
+            }
+        }
+        
+        // Загрузка YouTube API
+        function loadYouTubeAPI() {
+            if (!window.YT) {
+                const tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                const firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
+                window.onYouTubeIframeAPIReady = initPlayer;
+            } else {
+                initPlayer();
+            }
+        }
+        
+        // Инициализация плеера
+        function initPlayer() {
+            player = new YT.Player('ytplayer', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        // Обработчик готовности плеера
+        function onPlayerReady(event) {
+            // Устанавливаем качество по умолчанию
+            event.target.setPlaybackQuality('hd1080');
+        }
+        
+        // Обработчик изменения состояния
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED && currentVideoIndex >= 0) {
+                // Автопереход к следующему видео при окончании
+                const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
+                const videoId = videos[nextIndex % videos.length].id;
+                selectVideo(nextIndex, videoId);
+            }
+        }
+        
+        // Запуск приложения
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
