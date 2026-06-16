@@ -21,6 +21,9 @@
             height: 100%;
             position: relative;
             background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         #ytplayer {
@@ -28,6 +31,14 @@
             height: 100%;
             border: none;
             display: none; /* Сначала скрыт */
+        }
+        
+        #image-display {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+            background: #000;
         }
         
         #text-content {
@@ -162,6 +173,7 @@
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
+        <img id="image-display" src="" alt="Work">
     </div>
     
     <div class="thumbnails-column" id="thumbnails-container">
@@ -169,78 +181,28 @@
     </div>
 
     <script>
-        // Конфигурация
-        const videos = [
-
-
-
-            { id: 'Rw4PbYEgXs0', title: 'Character part (personal)' },            
-            { id: 'QxZ1ObG4-zc', title: 'Character part (personal)' },            
-            { id: 'RyjFIjKKSbo', title: 'Helmet (personal)' },            
-            { id: '4P1uZrHpYjA', title: 'Character part (personal)' },            
-            { id: 'PeG6f6miLTs', title: 'Character part topology' }, 
-            { id: 'X4A0TiWc1aE', title: 'wip (personal)' },  
-            { id: 'Mw5Znx-4X6I', title: 'wip (personal)' },           
-            { id: '0AimnC3n1lY', title: 'Gnome (personal) UE5' },            
-            { id: 'MW3tpuubqqU', title: 'Gnome topology' },                   
-            { id: '4psThXW463s', title: 'Gnome shading, bones' },                 
-            { id: 'lFlO23GdCrM', title: 'House sculpt wip (from concept)' },            
-            { id: 'F6-aOFt3JM8', title: 'Viking (from concept)' },         
-            { id: 'LmtUKBbLbSM', title: 'Toy (personal) UE5' },            
-            { id: 'MWqIDvwZxLk', title: 'Toy highpoly' },  
-            { id: 'RXPtgecmBeU', title: 'wip (from concept)' },      
-            { id: '61hk9rytS44', title: 'Robot (personal)' },  
-
-            { id: 'qZoou1QjJu0', title: 'wip (personal)' },
-            
-            
-            { id: '1WnAjfIpLS8', title: 'Toad (from concept)' },            
-            { id: '-KdRvkjVWMw', title: 'Toad (from concept)' },            
-            { id: 'xBooUcvSWi8', title: 'Toad (from concept)' },  
-            { id: 'XfxyGbh5dmI', title: 'wip (from concept)' },              
-            { id: 'GqpH4pT1V9w', title: 'Character (from concept)' },            
-            { id: 'eJcgfIXJ4ks', title: 'Character topology' },                
-            { id: 'MyiKJtuOGWU', title: 'Welder (from concept)' },   
-            //{ id: 'KzPDm75xZiw', title: 'wip (from concept)' },              
-         
-            { id: 'mEYsRvAUNQ8', title: 'Fan art (from concept)' },            
-            { id: 'Ew5DckGw4UI', title: 'Fan art topology' },  
-            { id: 'HrvfshcBKmk', title: 'Monster (from concept)' },   
-            { id: 'QHr1YhuzNWA', title: 'wip (personal)' },              
-            { id: '5j4rIv4lJys', title: 'Monster (personal)' },  
-            { id: 'w0-ge_ARniY', title: 'wip (personal)' },  
-            { id: 'rYR7oIECmJ0', title: 'skeleton (for UE pack)' },    
-            { id: 'AEOj70iULyo', title: 'UE id mask' },             
-            { id: 'H9qLULCM0O8', title: 'UE pack' }, 
-
-            { id: 'aFeV-YUNWok', title: 'Simple Anim' }, 
-            { id: 'TF52Ws9JaGo', title: 'Simple Anim' },
-            { id: 'alCU9edz1n8', title: 'Simple Anim' },
-            { id: 'sBsoOVKmTns', title: 'Simple Anim' },
-            { id: 'krJhDwKE-Cs', title: 'Simple Anim' },
-            { id: 'ATFR96MxrrI', title: 'Simple Anim' },
-            { id: '301rYV0R-6Y', title: 'Simple Anim' },
-            { id: 'QDWqL_sH-A8', title: 'Simple Anim' },
-            { id: '26b1zEO_xUY', title: 'Simple Anim' },
-
-            
-
-
-
-
-            
-                   
-           
+        // Конфигурация - ваши 12 изображений
+        const images = [
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(1).png', title: 'Work 1' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(2).png', title: 'Work 2' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(3).png', title: 'Work 3' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(4).png', title: 'Work 4' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(5).png', title: 'Work 5' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(6).png', title: 'Work 6' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(7).png', title: 'Work 7' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(8).png', title: 'Work 8' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(9).png', title: 'Work 9' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(10).png', title: 'Work 10' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(11).png', title: 'Work 11' },
+            { src: 'https://raw.githubusercontent.com/olrosim/Chelix/main/1a%20(12).png', title: 'Work 12' }
         ];
         
-        const totalThumbnails = 42;
-        let player;
-        let currentVideoIndex = -1; // -1 означает текстовый режим
+        const totalThumbnails = 12;
+        let currentImageIndex = -1; // -1 означает текстовый режим
         
         // Инициализация
         function init() {
             createThumbnails();
-            loadYouTubeAPI();
             showTextPage(1); // Показываем первую текстовую страницу
         }
         
@@ -260,7 +222,7 @@
             });
             container.appendChild(textThumb);
             
-            // 3D миниатюра (1) - теперь ссылка на index.html
+            // 3D миниатюра (1) - ссылка на index.html
             const twoDThumb = document.createElement('div');
             twoDThumb.className = 'thumbnail text-thumbnail';
             twoDThumb.innerHTML = `
@@ -272,20 +234,19 @@
             });
             container.appendChild(twoDThumb);
             
-            // Видео миниатюры (2-43)
+            // Миниатюры изображений (2-13)
             for (let i = 0; i < totalThumbnails; i++) {
-                const videoIndex = i % videos.length;
-                const video = videos[videoIndex];
+                const image = images[i];
                 const thumbnail = document.createElement('div');
                 thumbnail.className = 'thumbnail';
                 
                 thumbnail.innerHTML = `           
-                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg?v=2" alt="${video.title}">
-                    <div class="thumbnail-number">${video.title}</div>                    
+                    <img src="${image.src}" alt="${image.title}">
+                    <div class="thumbnail-number">${image.title}</div>                    
                 `;
                 
                 thumbnail.addEventListener('click', () => {
-                    selectVideo(i, video.id);
+                    selectImage(i, image.src);
                 });
                 
                 container.appendChild(thumbnail);
@@ -294,8 +255,9 @@
         
         // Показать текстовую страницу
         function showTextPage(pageNum) {
-            // Скрываем видео, показываем текстовый контент
+            // Скрываем видео и изображение, показываем текстовый контент
             document.getElementById('ytplayer').style.display = 'none';
+            document.getElementById('image-display').style.display = 'none';
             document.getElementById('text-content').style.display = 'block';
             
             // Скрываем все страницы, показываем нужную
@@ -310,22 +272,12 @@
             });
             document.querySelectorAll('.thumbnail')[0].classList.add('active');
             
-            // Останавливаем видео, если оно играло
-            if (player && currentVideoIndex >= 0) {
-                player.pauseVideo();
-            }
-            
-            currentVideoIndex = -1;
+            currentImageIndex = -1;
         }
         
-        // Начать просмотр видео
-        function startVideos() {
-            selectVideo(0, videos[0].id);
-        }
-        
-        // Выбор видео
-        function selectVideo(index, videoId) {
-            if (currentVideoIndex === index) return;
+        // Выбор изображения
+        function selectImage(index, imageSrc) {
+            if (currentImageIndex === index) return;
             
             // Удаляем активный класс у всех миниатюр
             document.querySelectorAll('.thumbnail').forEach(thumb => {
@@ -339,59 +291,13 @@
             // Прокручиваем к выбранной миниатюре
             thumbs[index + 2].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             
-            // Показываем плеер и скрываем текстовый контент
+            // Показываем изображение, скрываем текст и видео
             document.getElementById('text-content').style.display = 'none';
-            document.getElementById('ytplayer').style.display = 'block';
+            document.getElementById('ytplayer').style.display = 'none';
+            document.getElementById('image-display').style.display = 'block';
+            document.getElementById('image-display').src = imageSrc;
             
-            // Меняем видео
-            if (player) {
-                player.loadVideoById(videoId);
-                currentVideoIndex = index;
-            } else {
-                // Если API еще не загрузилось, меняем src iframe напрямую
-                document.getElementById('ytplayer').src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&enablejsapi=1`;
-                currentVideoIndex = index;
-            }
-        }
-        
-        // Загрузка YouTube API
-        function loadYouTubeAPI() {
-            if (!window.YT) {
-                const tag = document.createElement('script');
-                tag.src = "https://www.youtube.com/iframe_api";
-                const firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-                
-                window.onYouTubeIframeAPIReady = initPlayer;
-            } else {
-                initPlayer();
-            }
-        }
-        
-        // Инициализация плеера
-        function initPlayer() {
-            player = new YT.Player('ytplayer', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-        
-        // Обработчик готовности плеера
-        function onPlayerReady(event) {
-            // Устанавливаем качество по умолчанию
-            event.target.setPlaybackQuality('hd1080');
-        }
-        
-        // Обработчик изменения состояния
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED && currentVideoIndex >= 0) {
-                // Автопереход к следующему видео при окончании
-                const nextIndex = (currentVideoIndex + 1) % totalThumbnails;
-                const videoId = videos[nextIndex % videos.length].id;
-                selectVideo(nextIndex, videoId);
-            }
+            currentImageIndex = index;
         }
         
         // Запуск приложения
