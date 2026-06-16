@@ -260,7 +260,19 @@
             });
             container.appendChild(textThumb);
             
-            // Видео миниатюры (1-31)
+            // 2D миниатюра (1)
+            const twoDThumb = document.createElement('div');
+            twoDThumb.className = 'thumbnail text-thumbnail';
+            twoDThumb.innerHTML = `
+                <div>2 D</div>
+                <div class="thumbnail-number"> </div>
+            `;
+            twoDThumb.addEventListener('click', () => {
+                showTextPage(1);
+            });
+            container.appendChild(twoDThumb);
+            
+            // Видео миниатюры (2-43)
             for (let i = 0; i < totalThumbnails; i++) {
                 const videoIndex = i % videos.length;
                 const video = videos[videoIndex];
@@ -322,10 +334,10 @@
             
             // Добавляем активный класс выбранной миниатюре
             const thumbs = document.querySelectorAll('.thumbnail');
-            thumbs[index + 1].classList.add('active'); // +1 потому что 0-я - текстовая
+            thumbs[index + 2].classList.add('active'); // +2 потому что 0-я - текстовая, 1-я - 2D
             
             // Прокручиваем к выбранной миниатюре
-            thumbs[index + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            thumbs[index + 2].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             
             // Показываем плеер и скрываем текстовый контент
             document.getElementById('text-content').style.display = 'none';
@@ -387,49 +399,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
